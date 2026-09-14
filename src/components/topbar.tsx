@@ -12,7 +12,7 @@ const TABS = [
 
 export function Topbar() {
   const pathname = usePathname();
-  const hide = pathname === "/" || pathname === "/login" || pathname === "/onboard";
+  const hide = pathname === "/" || pathname === "/login" || pathname === "/onboard" || pathname === "/motion";
   if (hide) return null;
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-paper/85 backdrop-blur-md">

@@ -24,6 +24,7 @@ export async function middleware(request: NextRequest) {
     path === "/" ||
     path.startsWith("/login") ||
     path.startsWith("/auth") ||
+    path.startsWith("/motion") ||
     path.startsWith("/_next") ||
     path.startsWith("/favicon");
 
