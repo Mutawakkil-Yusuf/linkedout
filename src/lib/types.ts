@@ -4,8 +4,6 @@ export type Profile = {
   display_name: string | null;
   bio: string | null;
   now: string | null;
-  avatar_style: "lorelei" | "notionists" | "shadows" | null;
-  avatar_seed: string | null;
   created_at: string;
 };
 

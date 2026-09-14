@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Lockup } from "@/components/logo";
-import { AvatarPicker } from "@/components/avatar-picker";
 import { createProfile } from "./actions";
 
 export default function OnboardPage() {
@@ -16,14 +15,11 @@ export default function OnboardPage() {
     if (res?.error) { setError(res.error); setPending(false); }
   }
   return (
-    <div className="mx-auto max-w-[40rem] px-4 py-10 sm:px-5 sm:py-14">
-      <header className="mb-10 flex items-center sm:mb-12"><Lockup size={34} /></header>
-      <h1 className="mb-3 font-display text-[1.9rem] font-bold leading-tight tracking-[-0.03em] sm:text-[2.25rem] sm:tracking-[-0.035em]">Pick a handle</h1>
+    <div className="mx-auto max-w-[40rem] px-5 py-14">
+      <header className="mb-12 flex items-center"><Lockup size={34} /></header>
+      <h1 className="mb-3 font-display text-[2.25rem] font-bold leading-tight tracking-[-0.035em]">Pick a handle</h1>
       <p className="mb-10 max-w-[32rem] text-[1rem] leading-relaxed text-muted">This is how people find you here. Real name is optional. Don’t use your work identity.</p>
       <form action={onSubmit} className="space-y-5">
-        <Field label="avatar" hint="pick one · or skip for initials">
-          <AvatarPicker fieldNames={{ style: "avatar_style", seed: "avatar_seed" }} />
-        </Field>
         <Field label="handle" hint="3–24 chars, a–z, 0–9, underscore"><Input name="handle" required placeholder="quiet_forest" autoFocus /></Field>
         <Field label="right now" hint="optional · 140 chars"><Input name="now" maxLength={140} placeholder="Learning to sit still" /></Field>
         <Field label="display name" hint="optional"><Input name="display_name" placeholder="M." /></Field>
@@ -35,5 +31,5 @@ export default function OnboardPage() {
   );
 }
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return <div><div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5"><label className="font-mono text-[0.72rem] uppercase tracking-wider text-muted">{label}</label>{hint && <span className="font-mono text-[0.68rem] text-line-2">{hint}</span>}</div>{children}</div>;
+  return <div><div className="mb-1.5 flex items-baseline justify-between"><label className="font-mono text-[0.72rem] uppercase tracking-wider text-muted">{label}</label>{hint && <span className="font-mono text-[0.68rem] text-line-2">{hint}</span>}</div>{children}</div>;
 }

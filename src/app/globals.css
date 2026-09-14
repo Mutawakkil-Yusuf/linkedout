@@ -1,23 +1,14 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
-html {
-  width: 100%;
-  overflow-x: hidden;
-}
-
-body {
+html, body {
   background: #fdf8f3;
   color: #1c1613;
-  width: 100%;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 * { box-sizing: border-box; }
-
-img, svg { max-width: 100%; height: auto; }
 
 ::selection {
   background: #e8571f2e;

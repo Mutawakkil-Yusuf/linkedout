@@ -23,7 +23,7 @@ export function LogoMark({ size = 40, variant = "gradient", className }: MarkPro
 }
 
 export function Wordmark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
-  const sizes = { sm: "text-[1.15rem]", md: "text-[1.1rem] sm:text-[1.35rem]", lg: "text-[1.5rem] sm:text-[2rem]" };
+  const sizes = { sm: "text-[1.15rem]", md: "text-[1.35rem]", lg: "text-[2rem]" };
   return (
     <span className={cn("font-display font-bold leading-none tracking-[-0.035em]", sizes[size])}>
       Linked<span className="text-flame">Out</span>
@@ -31,11 +31,11 @@ export function Wordmark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   );
 }
 
-export function Lockup({ size = 32 }: { size?: number }) {
+export function Lockup({ size = 32, wordmarkSize = "md" }: { size?: number; wordmarkSize?: "sm" | "md" | "lg" }) {
   return (
-    <span className="inline-flex items-center gap-2.5">
+    <span className="inline-flex min-w-0 items-center gap-2.5">
       <LogoMark size={size} />
-      <Wordmark />
+      <Wordmark size={wordmarkSize} />
     </span>
   );
 }
