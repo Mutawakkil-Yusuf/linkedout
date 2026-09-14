@@ -27,7 +27,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
   );
 
   const { data: posts } = await supabase.from("posts")
-    .select("id, body, created_at, author:profiles!posts_author_id_fkey(handle, display_name)")
+    .select("id, body, created_at, author:profiles!posts_author_id_fkey(handle, display_name, avatar_style, avatar_seed)")
     .eq("room_id", room.id).is("deleted_at", null).order("created_at", { ascending: false }).limit(50);
   const postIds = (posts ?? []).map((p) => p.id);
   const { data: warmRows } = postIds.length
