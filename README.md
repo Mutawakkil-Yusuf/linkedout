@@ -1,0 +1,44 @@
+# LinkedOut
+
+A pseudonymous social network built around people and rooms rather than résumés, recruiters, follower counts, and professional identity.
+
+## Stack
+
+- Next.js App Router + TypeScript
+- Tailwind CSS
+- Supabase Auth + Postgres + RLS
+- Vercel
+
+## Local setup
+
+```bash
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+Create a Supabase project, fill `.env.local`, then apply the migration:
+
+```bash
+npx supabase link --project-ref <your-ref>
+npx supabase db push
+```
+
+For Supabase Auth, enable Email and add:
+
+- Local callback: `http://localhost:3000/auth/callback`
+- Production callback: `https://YOUR-DOMAIN/auth/callback`
+
+Set `NEXT_PUBLIC_SITE_URL` to the matching origin.
+
+## Vercel
+
+Import the repository into Vercel and add the four environment variables from `.env.example`.
+
+**Important:** `SUPABASE_SERVICE_ROLE_KEY` is server-only. Never prefix it with `NEXT_PUBLIC_` and never expose it to client code.
+
+## Notes
+
+The project intentionally avoids employer-oriented profile fields such as company, school, title, skills, endorsements, follower counts, view counts, jobs, and salary.
+
+Before public launch, review the RLS policies and implement moderation/rate limiting.
