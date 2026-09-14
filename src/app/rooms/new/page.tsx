@@ -18,7 +18,7 @@ export default function NewRoomPage() {
     const description = String(fd.get("description") || "").trim() || null;
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setError("Not signed in"); setPending(false); return; }
+    if (!user) { setError("You've been signed out — refresh and try again."); setPending(false); return; }
     const { data: room, error: rErr } = await supabase.from("rooms").insert({ slug, name, description, created_by: user.id }).select("id, slug").single();
     if (rErr) { setError(rErr.message); setPending(false); return; }
     await supabase.from("room_members").insert({ room_id: room.id, user_id: user.id, role: "owner" });

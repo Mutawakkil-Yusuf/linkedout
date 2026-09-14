@@ -9,7 +9,7 @@ export function Composer({ roomId }: { roomId: string | null }) {
   async function submit() {
     if (!body.trim()) return; setPending(true); setErr(null);
     const supabase = createClient(); const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setErr("Not signed in"); setPending(false); return; }
+    if (!user) { setErr("You've been signed out — refresh and try again."); setPending(false); return; }
     const { error } = await supabase.from("posts").insert({ author_id: user.id, room_id: roomId, body: body.trim() });
     setPending(false); if (error) { setErr(error.message); return; } setBody(""); router.refresh();
   }

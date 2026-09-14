@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return new NextResponse("Unauthorized", { status: 401 });
+  if (!user) return new NextResponse("Sign in first.", { status: 401 });
   const [profile, posts, replies, dms, memberships] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("posts").select("*").eq("author_id", user.id),
