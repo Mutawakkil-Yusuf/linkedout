@@ -1,9 +1,13 @@
+import type { AvatarStyle } from "./avatar";
+
 export type Profile = {
   id: string;
   handle: string;
   display_name: string | null;
   bio: string | null;
   now: string | null;
+  avatar_style: AvatarStyle | null;
+  avatar_seed: string | null;
   created_at: string;
 };
 

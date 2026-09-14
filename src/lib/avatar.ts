@@ -21,3 +21,47 @@ export function initials(handle: string): string {
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return handle.slice(0, 2).toUpperCase();
 }
+
+// --- DiceBear-backed avatars -------------------------------------------------
+
+export const AVATAR_STYLES = ["lorelei", "notionists", "shadows"] as const;
+export type AvatarStyle = (typeof AVATAR_STYLES)[number];
+
+export const AVATAR_STYLE_LABELS: Record<AvatarStyle, string> = {
+  lorelei: "Lorelei",
+  notionists: "Notionists",
+  shadows: "Shadows",
+};
+
+const DICEBEAR_BASE = "https://api.dicebear.com/10.x";
+
+/** Background tints per style so the grid doesn't look monochrome. */
+const AVATAR_BACKGROUNDS: Record<AvatarStyle, string> = {
+  lorelei: "ffd5c2,ffe9d1,c2e8ff",
+  notionists: "f4d7c3,d9f4c3,c3e0f4",
+  shadows: "e8571f",
+};
+
+export function dicebearUrl(style: AvatarStyle, seed: string, size = 128): string {
+  const params = new URLSearchParams({
+    seed,
+    backgroundType: "gradientLinear",
+    backgroundColor: AVATAR_BACKGROUNDS[style],
+    size: String(size),
+  });
+  return `${DICEBEAR_BASE}/${style}/svg?${params.toString()}`;
+}
+
+function randomSeed(): string {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+}
+
+export type AvatarChoice = { style: AvatarStyle; seed: string };
+
+/** A fresh grid of `count` random avatars for one category tab, or a shuffled mix across all styles for "mix". */
+export function buildAvatarGrid(category: AvatarStyle | "mix", count = 9): AvatarChoice[] {
+  return Array.from({ length: count }, () => ({
+    style: category === "mix" ? AVATAR_STYLES[Math.floor(Math.random() * AVATAR_STYLES.length)] : category,
+    seed: randomSeed(),
+  }));
+}
