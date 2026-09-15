@@ -1,5 +1,10 @@
 # LinkedOut — favicon + splash integration notes
 
+**Status: fully merged.** `globals.append.css` has been folded into the real
+`src/app/globals.css` (and deleted) — this is what fixes the splash text
+rendering as unstyled black instead of "Linked" (ink) + "**Out**" (flame,
+animated). Everything below is the history of what changed and why.
+
 Reviewed against the existing codebase conventions (Tailwind design tokens
 `bg-paper`/`text-ink`/`font-display`/`rounded-card` from `settings/page.tsx`,
 `@dicebear` + `clsx`/`tailwind-merge` in `package.json`). Two real bugs in the
@@ -31,12 +36,14 @@ copied through unchanged.
   real routes: `/icon.svg` + `/apple-icon`), `letter-word.tsx`,
   `splash-screen.tsx` component logic.
 
-## Not included (assumed already in your repo, not in the uploaded zip)
+## Verified against the real project
 
-- `src/components/mark-loader.tsx`, `src/components/topbar.tsx`,
-  `src/lib/utils.ts` (`cn` — consistent with `clsx` + `tailwind-merge`
-  already in `package.json`), and the current `src/app/globals.css` (see
-  `globals.append.css` — append it, don't replace the file).
+- `mark-loader.tsx`, `topbar.tsx`, `lib/utils.ts` (`cn`), and `globals.css`
+  checked directly — no naming or spec conflicts with anything above.
+  `globals.css` now has both animation blocks (the pre-existing
+  pop/slot-draw/breathe set for `MarkLoader`, plus the letter-sway set),
+  and only one `.lo-skip-splash` rule (it already existed before this
+  change; nothing got duplicated).
 
 ## Install prompt (added)
 
