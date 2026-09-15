@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import { Topbar } from "@/components/topbar";
 import { SplashScreen } from "@/components/splash-screen";
+import { RegisterServiceWorker } from "@/components/register-service-worker";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "(function(){try{if(sessionStorage.getItem('lo_splash_seen')==='1'){document.documentElement.classList.add('lo-skip-splash')}}catch(e){}})();",
           }}
         />
+        <RegisterServiceWorker />
         <SplashScreen />
         <Topbar />
         <main className="mx-auto max-w-[40rem] px-5 pb-24">{children}</main>
