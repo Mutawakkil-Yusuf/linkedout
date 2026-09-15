@@ -31,6 +31,24 @@ For Supabase Auth, enable Email and add:
 
 Set `NEXT_PUBLIC_SITE_URL` to the matching origin.
 
+### Email
+
+Auth emails (magic link, signup confirmation) are sent through custom SMTP —
+configured once in **Project Settings → Authentication → SMTP Settings** in
+the Supabase dashboard, not tracked in this repo since it holds credentials.
+
+Email *content* is tracked, though — `supabase/templates/` holds the actual
+HTML, wired up in `supabase/config.toml`. To push template changes to the
+hosted project:
+
+```bash
+npx supabase config push
+```
+
+Edit the `.html` files in `supabase/templates/`, not the dashboard's
+template editor — the dashboard editor gets overwritten on the next
+`config push`.
+
 ## Vercel
 
 Import the repository into Vercel and add the four environment variables from `.env.example`.

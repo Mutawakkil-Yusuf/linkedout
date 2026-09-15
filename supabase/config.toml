@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 Mutawakkil Yusuf
+
+project_id = "linkedout"
+
+[auth.email.template.magic_link]
+subject = "Your way in"
+content_path = "./supabase/templates/magic-link.html"
+
+[auth.email.template.confirmation]
+subject = "Confirm your email — LinkedOut"
+content_path = "./supabase/templates/confirmation.html"
