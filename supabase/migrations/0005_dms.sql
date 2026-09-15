@@ -6,7 +6,15 @@
 -- dm_threads / dm_members / dm_messages tables and their RLS policies
 -- already exist (0001_init.sql). This migration only adds the RPC
 -- helpers the DM UI needs and turns on realtime for new messages.
+--
+-- list_my_dm_threads() below returns avatar_style/avatar_seed from
+-- profiles (added in 0003_add_avatar_style.sql). This guard makes
+-- 0005 safe to run even if 0003 was skipped or applied out of order.
 -- ═══════════════════════════════════════════════════════════════
+
+alter table public.profiles
+  add column if not exists avatar_style text check (avatar_style in ('lorelei', 'notionists', 'shadows')),
+  add column if not exists avatar_seed text check (char_length(avatar_seed) <= 64);
 
 create or replace function public.can_dm_user(p_other uuid)
 returns boolean
