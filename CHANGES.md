@@ -45,6 +45,35 @@ copied through unchanged.
   and only one `.lo-skip-splash` rule (it already existed before this
   change; nothing got duplicated).
 
+## The actual reason install still didn't work
+
+`src/middleware.ts`'s matcher ran the Supabase auth check on almost every
+request, and its `isPublic` allowlist only covered `/`, `/login`, `/auth`,
+`/motion`, `/_next`, `/favicon`. `/manifest.webmanifest`, `/sw.js`,
+`/icon.svg`, `/icon-192`, `/icon-512`, and `/apple-icon` weren't on it — so
+any signed-out visitor (i.e. anyone Chrome would show an install prompt to
+on your landing page) got all of those redirected to `/login`. An HTML
+redirect where Chrome expects JSON/JS/PNG fails the manifest fetch, the
+service-worker registration, and the icon checks simultaneously — which is
+consistent with nothing above working despite every file being individually
+correct.
+
+**Fix:** added those paths to the middleware `config.matcher` negative
+lookahead, so it skips them before the auth check ever runs:
+
+```ts
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|icon.svg|icon-192|icon-512|apple-icon).*)",
+  ],
+};
+```
+
+After this, re-check in an incognito window (so you're testing signed-out,
+where it was actually failing): DevTools → Network → reload → `manifest.webmanifest`
+should return `200` with `Content-Type: application/manifest+json`, not a
+redirect to `/login`.
+
 ## Install prompt (added)
 
 The real blocker for Chrome/Edge/Android's install prompt wasn't the missing
