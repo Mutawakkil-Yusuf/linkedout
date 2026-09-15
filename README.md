@@ -45,9 +45,22 @@ hosted project:
 npx supabase config push
 ```
 
+The Supabase CLI's binary isn't available on every platform (notably
+Android/Termux). Where it isn't, use `scripts/push-email-templates.sh`
+instead — it pushes the same `supabase/templates/*.html` files via the
+Supabase Management API directly:
+
+```bash
+export SUPABASE_ACCESS_TOKEN="sbp_..."   # https://supabase.com/dashboard/account/tokens
+export SUPABASE_PROJECT_REF="your-ref"
+./scripts/push-email-templates.sh
+```
+
+Requires `jq` (`pkg install jq` on Termux).
+
 Edit the `.html` files in `supabase/templates/`, not the dashboard's
 template editor — the dashboard editor gets overwritten on the next
-`config push`.
+push, whichever method you use.
 
 ## Vercel
 

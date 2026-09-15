@@ -111,7 +111,7 @@ export default async function Landing() {
       </section>
       <footer className="mt-20 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-line pt-6 font-mono text-[0.72rem] text-muted">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span>MIT</span><span className="text-line-2">·</span><span>self-hostable</span><span className="text-line-2">·</span><span>no ads</span><span className="text-line-2">·</span><span>no recruiter search</span>
+          <span>AGPL-3.0</span><span className="text-line-2">·</span><span>self-hostable</span><span className="text-line-2">·</span><span>no ads</span><span className="text-line-2">·</span><span>no recruiter search</span>
         </div>
         <div className="flex items-center gap-4">
           <a
