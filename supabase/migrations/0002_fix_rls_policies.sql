@@ -7,6 +7,12 @@
 --    Net effect: any user who belongs to at least one DM thread could
 --    read every row in dm_members, enumerating all DM memberships.
 --
+--    NOTE: qualifying the column here was correct but incomplete — the
+--    policy below still has a separate, structural bug (a self-
+--    referencing subquery on dm_members causes infinite recursion,
+--    Postgres error 42P17). See 0007_fix_dm_members_recursion.sql for
+--    the actual fix; the policy this file creates gets replaced there.
+--
 -- 2. replies_read: only checked that the parent post row exists, not
 --    that it's visible to the reader (room membership / shared context,
 --    not blocked, not soft-deleted). Leaked replies on posts in private

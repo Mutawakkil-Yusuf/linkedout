@@ -14,9 +14,47 @@
 -- NOT touch any table data — only policy definitions.
 -- ═══════════════════════════════════════════════════════════════
 
--- 1. dm_members: remove the buggy duplicate. dm_members_read (the
---    correctly-qualified one) already exists and stays as-is.
+-- 1. dm_members: two separate problems on this one table.
+--
+--    a) dm_members_member_read — a duplicate policy under a different
+--       name that reintroduced the ambiguous-column bug 0002 already
+--       fixed under the name dm_members_read. Just drop it.
+--
+--    b) dm_members_read itself (the "correct" one) still had a deeper
+--       bug: its USING clause queries dm_members again to check
+--       membership, and that inner query is itself subject to RLS on
+--       dm_members — so evaluating the policy re-triggers the same
+--       policy, forever. Postgres surfaces this as error 42P17,
+--       "infinite recursion detected in policy for relation
+--       dm_members". Qualifying the column (0002's fix) didn't touch
+--       this — a self-referencing subquery on the same RLS-protected
+--       table recurses regardless of how its columns are qualified.
+--
+--       Fixed by moving the check into a `security definer` function
+--       (same pattern already used by is_room_member, can_dm_user,
+--       etc.) — inside such a function the query runs with the
+--       function owner's privileges and does not re-apply RLS, so it
+--       can check dm_members without recursing.
+
 drop policy if exists "dm_members_member_read" on public.dm_members;
+
+create or replace function public.is_dm_member(p_thread uuid, p_user uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from dm_members
+    where thread_id = p_thread and user_id = p_user
+  );
+$$;
+
+drop policy if exists "dm_members_read" on public.dm_members;
+create policy "dm_members_read" on public.dm_members for select using (
+  public.is_dm_member(thread_id, auth.uid())
+);
 
 -- 2. Rename-only cases below: drop the old-named policy and
 --    recreate under the canonical name from the migration files,
