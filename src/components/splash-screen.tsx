@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { MarkLoader } from "./mark-loader";
+import { LetterWord } from "./letter-word";
 
-const MIN_VISIBLE = 1200;
-const MAX_VISIBLE = 2000;
+const MIN_VISIBLE = 1600;
+const MAX_VISIBLE = 2400;
 const FADE_MS = 500;
 
 type Phase = "drawing" | "breathing" | "leaving" | "off";
@@ -15,7 +16,6 @@ export function SplashScreen() {
   useEffect(() => {
     let seen = false;
     try { seen = sessionStorage.getItem("lo_splash_seen") === "1"; } catch {}
-
     if (seen) { setPhase("off"); return; }
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -67,11 +67,24 @@ export function SplashScreen() {
       className={`fixed inset-0 z-[100] flex items-center justify-center bg-paper transition-opacity duration-500 ${
         phase === "leaving" ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
     >
-      <MarkLoader size={96} phase={phase === "drawing" ? "drawing" : "breathing"} />
-      <span className="absolute bottom-8 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-muted">
-        loading
-      </span>
+      <div className="flex flex-col items-center gap-7">
+        <MarkLoader
+          size={96}
+          phase={phase === "drawing" ? "drawing" : "breathing"}
+        />
+        <LetterWord
+          text="LinkedOut"
+          flameFrom={6}
+          startDelay={700}
+          idle
+          className="text-[1.85rem]"
+        />
+      </div>
     </div>
   );
 }
