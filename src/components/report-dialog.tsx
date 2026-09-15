@@ -1,6 +1,11 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { useState } from "react";
 import { ActionButton } from "@/components/ui/action-button";
+import { useToast } from "@/components/toast-provider";
 import { createReport } from "@/lib/actions/moderation";
 
 const REASONS: { value: string; label: string }[] = [
@@ -21,6 +26,7 @@ type Props = {
 };
 
 export function ReportDialog({ open, onClose, targetType, targetId, roomId }: Props) {
+  const toast = useToast();
   const [reason, setReason] = useState("harassment");
   const [note, setNote] = useState("");
 
@@ -32,7 +38,8 @@ export function ReportDialog({ open, onClose, targetType, targetId, roomId }: Pr
       reason: reason as any,
       note: note.trim() || undefined,
     });
-    if (!res.ok) throw new Error(res.error);
+    if (!res.ok) { toast(res.error, "error"); throw new Error(res.error); }
+    toast("Reported — mods will take it from here.", "success");
     onClose();
   }
 

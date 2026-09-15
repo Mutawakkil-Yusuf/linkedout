@@ -1,4 +1,8 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import Link from "next/link";
 import { useState } from "react";
 import { Heart, MessageCircle, MoreHorizontal, Flag } from "lucide-react";
@@ -17,9 +21,13 @@ type Props = {
   author: Pick<Profile, "handle" | "display_name" | "avatar_style" | "avatar_seed"> | null;
   warmed?: boolean;
   currentUserId?: string | null;
+  /** total replies — shown to everyone, it's wayfinding not a vanity metric */
+  replyCount?: number;
+  /** total reactions — only ever rendered when the viewer is the post's author (see below) */
+  warmthCount?: number;
 };
 
-export function PostCard({ post, author, warmed: warm0 = false, currentUserId }: Props) {
+export function PostCard({ post, author, warmed: warm0 = false, currentUserId, replyCount = 0, warmthCount = 0 }: Props) {
   const [warmed, setWarmed] = useState(warm0);
   const [pending, setPending] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -134,12 +142,23 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId }:
           >
             <Heart className={cn("h-4 w-4", warmed && "fill-current")} />
             {warmed ? "warmed" : "send warmth"}
+            {/* Only the author sees the total — everyone else only sees their
+                own warmed/not-warmed state. Matches the DB's own visibility
+                rule for reactions, and keeps this a private signal to the
+                author rather than a public like-count. */}
+            {isAuthor && warmthCount > 0 && (
+              <span className="font-mono text-[0.75rem] text-muted">{warmthCount}</span>
+            )}
           </button>
           <Link
             href={`/p/${post.id}`}
             className="inline-flex items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[0.8rem] font-medium text-muted transition hover:bg-paper-2 hover:text-ink"
           >
-            <MessageCircle className="h-4 w-4" /> reply
+            <MessageCircle className="h-4 w-4" />
+            reply
+            {replyCount > 0 && (
+              <span className="font-mono text-[0.75rem] text-muted">{replyCount}</span>
+            )}
           </Link>
         </footer>
       )}

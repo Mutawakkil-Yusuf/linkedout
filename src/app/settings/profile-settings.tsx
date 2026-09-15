@@ -1,4 +1,8 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -43,7 +47,7 @@ export function ProfileSettingsForm({ initial }: { initial: Initial }) {
         <Textarea name="bio" rows={3} maxLength={500} value={bio} onChange={(e) => { setBio(e.target.value); setSaved(false); }} placeholder="Into long walks, bad sci-fi, cooking for people I like." />
       </Field>
       <div className="flex items-center gap-3">
-        <Button size="sm" type="submit" disabled={!dirty || pending}>{pending ? "Saving…" : "Save changes"}</Button>
+        <Button size="sm" type="submit" disabled={!dirty || pending}>{pending ? "Keeping…" : "Keep it"}</Button>
         {saved && <span className="font-mono text-[0.75rem] text-flame-deep">saved</span>}
         {err && <span className="text-sm text-flame-deep">{err}</span>}
       </div>

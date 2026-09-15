@@ -1,4 +1,8 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";

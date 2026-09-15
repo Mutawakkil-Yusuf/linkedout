@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -70,7 +73,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
 
   const { data: posts } = await supabase
     .from("posts")
-    .select("id, body, created_at, hidden_at, author_id, room_id, author:profiles!posts_author_id_fkey(handle, display_name, avatar_style, avatar_seed)")
+    .select("id, body, created_at, hidden_at, author_id, room_id, author:profiles!posts_author_id_fkey(handle, display_name, avatar_style, avatar_seed), reactions(count), replies(count)")
     .eq("room_id", room.id)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
@@ -94,6 +97,8 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
               author={p.author}
               warmed={warmed.has(p.id)}
               currentUserId={user.id}
+              replyCount={p.replies?.[0]?.count ?? 0}
+              warmthCount={p.reactions?.[0]?.count ?? 0}
             />
           </li>
         )) : (

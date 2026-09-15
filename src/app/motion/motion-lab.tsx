@@ -1,4 +1,8 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { ActionButton } from "@/components/ui/action-button";
 import { Lockup } from "@/components/logo";
 

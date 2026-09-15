@@ -1,4 +1,8 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +28,7 @@ export default function OnboardPage() {
         <Field label="right now" hint="optional · 140 chars"><Input name="now" maxLength={140} placeholder="Learning to sit still" /></Field>
         <Field label="display name" hint="optional"><Input name="display_name" placeholder="M." /></Field>
         <Field label="bio" hint="optional · not your job"><Textarea name="bio" rows={3} placeholder="Into long walks, bad sci-fi, cooking for people I like." /></Field>
-        <Button type="submit" disabled={pending}>{pending ? "Creating…" : "Create profile"}</Button>
+        <Button type="submit" disabled={pending}>{pending ? "Walking in…" : "Enter LinkedOut"}</Button>
         {error && <p className="text-sm text-flame-deep">{error}</p>}
       </form>
     </div>

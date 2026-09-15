@@ -1,8 +1,13 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { ActionButton } from "@/components/ui/action-button";
+import { useToast } from "@/components/toast-provider";
 import { handleReport } from "@/lib/actions/moderation";
 import { relativeTime } from "@/lib/utils";
 import type { AvatarStyle } from "@/lib/avatar";
@@ -30,10 +35,18 @@ type Props = {
   target: Target | null;
 };
 
+const ACTION_DONE_LABEL: Record<"hide" | "remove" | "ban" | "dismiss", string> = {
+  hide: "Post hidden.",
+  remove: "Post removed.",
+  ban: "Author banned from this room.",
+  dismiss: "Report dismissed.",
+};
+
 export function ModActionCard({
   reportId, roomId, reasonLabel, note, createdAt, reporter, target,
 }: Props) {
   const router = useRouter();
+  const toast = useToast();
   const [reason, setReason] = useState("");
   const [pick, setPick] = useState<"hide" | "remove" | "ban" | "dismiss">("hide");
 
@@ -43,7 +56,8 @@ export function ModActionCard({
       action: pick,
       reason: reason.trim() || reasonLabel,
     });
-    if (!res.ok) throw new Error(res.error);
+    if (!res.ok) { toast(res.error, "error"); throw new Error(res.error); }
+    toast(ACTION_DONE_LABEL[pick], "success");
     router.refresh();
   }
 

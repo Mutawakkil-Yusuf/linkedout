@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { avatarGradient, initials, dicebearUrl, type AvatarStyle } from "@/lib/avatar";
 import { cn } from "@/lib/utils";
 

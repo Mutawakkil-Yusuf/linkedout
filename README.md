@@ -42,3 +42,9 @@ Import the repository into Vercel and add the four environment variables from `.
 The project intentionally avoids employer-oriented profile fields such as company, school, title, skills, endorsements, follower counts, view counts, jobs, and salary.
 
 Before public launch, review the RLS policies and implement moderation/rate limiting.
+
+## License
+
+AGPL-3.0-or-later — see [LICENSE](./LICENSE).
+
+Fork it, remix it, run your own instance — just keep it open. If you're hosting a modified version of LinkedOut for others to use, the AGPL asks you to share those changes too. That's the deal: freedom stays freedom, even on a server.

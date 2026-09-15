@@ -1,8 +1,13 @@
 "use client";
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/toast-provider";
 
 type Props = {
   threadId: string;
@@ -10,6 +15,7 @@ type Props = {
 };
 
 export function DmComposer({ threadId, onSent }: Props) {
+  const toast = useToast();
   const [body, setBody] = useState("");
   const [pending, setPending] = useState(false);
   const ta = useRef<HTMLTextAreaElement>(null);
@@ -28,7 +34,7 @@ export function DmComposer({ threadId, onSent }: Props) {
 
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setPending(false); return; }
+    if (!user) { toast("You've been signed out — refresh and try again.", "error"); setPending(false); return; }
 
     const { data, error } = await supabase
       .from("dm_messages")
@@ -37,7 +43,7 @@ export function DmComposer({ threadId, onSent }: Props) {
       .single();
 
     setPending(false);
-    if (error || !data) return;
+    if (error || !data) { toast(error?.message ?? "Couldn't send that — try again.", "error"); return; }
 
     setBody("");
     onSent(data);

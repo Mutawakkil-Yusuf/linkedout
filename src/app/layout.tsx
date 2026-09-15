@@ -1,9 +1,13 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import { Topbar } from "@/components/topbar";
 import { SplashScreen } from "@/components/splash-screen";
 import { RegisterServiceWorker } from "@/components/register-service-worker";
+import { ToastProvider } from "@/components/toast-provider";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -71,8 +75,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <RegisterServiceWorker />
         <SplashScreen />
-        <Topbar />
-        <main className="mx-auto max-w-[40rem] px-5 pb-24">{children}</main>
+        <ToastProvider>
+          <Topbar />
+          <main className="mx-auto max-w-[40rem] px-5 pb-24">{children}</main>
+        </ToastProvider>
       </body>
     </html>
   );

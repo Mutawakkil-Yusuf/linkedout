@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 const GRADIENTS = [
   "linear-gradient(135deg,#ff8a4c,#e8571f)",
   "linear-gradient(135deg,#4f8bff,#2c6df5)",

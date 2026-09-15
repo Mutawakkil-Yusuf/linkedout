@@ -104,3 +104,80 @@ through realfavicongenerator.net, keep only `favicon.ico`, and drop it in
 `app/favicon.ico` (not `public/`) — Next.js auto-detects it from that path
 directly, no metadata change needed. Skippable — `icon.svg` alone is fine
 for 2026 browser share.
+
+## Round 4 — landing page nav, counts
+
+- **GitHub icon**: moved from the header (next to "sign in," where it read as
+  part of the auth flow) to the footer, next to "AGPL-3.0 · self-hostable" —
+  now reads as source-code attribution, not a nav action. `src/app/page.tsx`.
+- **Duplicate email on sign-in**: investigated, found no app-level bug —
+  there's no password signup path, only `signInWithOtp`, and `profiles` has
+  no email column at all (identity is 100% Supabase Auth's `auth.users`).
+  Flagged as either working-as-intended or a Supabase project setting
+  ("Allow duplicate emails"), not something fixable in this repo. Asked for
+  exact repro steps before assuming more.
+- **Reply + warmth counts**: added `reactions(count)` / `replies(count)` to
+  the post queries in `rooms/[slug]/page.tsx`, `u/[handle]/page.tsx`,
+  `p/[id]/page.tsx`, passed through as `replyCount` / `warmthCount` props on
+  `PostCard`.
+  - Reply count shows to everyone — matches `replies_read`'s RLS scope, and
+    it's wayfinding, not a vanity metric.
+  - Warmth count only renders when the viewer is the post's author — the
+    `reactions_read` policy already only lets the reactor or the post's
+    author see reaction rows, so a public count would either be wrong (an
+    undercount for anyone else) or need a policy change that turns private
+    acknowledgment into a public score, which cuts against the "no follower
+    counts / not inventory" pitch on the landing page. Kept it private,
+    author-only — no RLS change needed since it already matches that policy.
+
+## Round 5 — voice pass, 404 page, toast system
+
+**Copy (3 of the 4 approved changes — DM empty state left as-is per request):**
+- Onboarding submit: "Create profile" → "Enter LinkedOut" ("Creating…" → "Walking in…") — echoes the login page's own phrase.
+- New room submit: "Create room" → "Open the room" ("Creating…" → "Opening…") — matches "Rooms you can walk into" on the landing page.
+- Settings save: "Save changes" → "Keep it" ("Saving…" → "Keeping…").
+
+**`src/app/not-found.tsx` (new)** — custom 404. Catches both bad URLs and every
+existing `notFound()` call in nested routes (`p/[id]`, `rooms/[slug]`,
+`u/[handle]`) since none of them had their own `not-found.tsx`. On-brand copy,
+CTAs to `/rooms` and `/`.
+
+**Global toast system** — `src/components/toast-provider.tsx` (new),
+wired into `layout.tsx` around `<Topbar>`/`<main>`. Two visual variants only,
+on purpose: error (paper/`flame-deep`, matches the existing inline error
+convention every form already used) and everything else (a dark ink pill) —
+no invented "success green," this app's palette is flame + neutrals.
+Respects `prefers-reduced-motion`.
+
+Wired in where it actually closes a gap, not everywhere:
+- **`composer.tsx`** — had an error message but *zero* success feedback
+  (textarea just cleared). Now toasts both.
+- **`reply-form.tsx`** — real bug fixed: on insert failure it silently reset
+  with no feedback at all. Now toasts both success and error.
+- **`dm-composer.tsx`** — same silent-failure bug on error, fixed with an
+  error toast. No success toast added — the message appearing instantly in
+  the thread is already the confirmation; toasting every send would be noise
+  in a chat UI.
+- **`report-dialog.tsx`**, **`mod-action-card.tsx`** — these already had
+  `ActionButton`'s inline "Done"/"Try again" state, which is generic by
+  design and never surfaces *why* something failed. Added toasts carrying
+  the actual detail (`res.error`) and, for mod actions, which action was
+  taken ("Post hidden." / "Report dismissed." / etc.) — additive, doesn't
+  replace the existing button feedback.
+- **`rooms/new/page.tsx`** — added a success toast ("#slug is open."). This
+  survives the `router.push()` into the new room because the root layout
+  (where `ToastProvider` lives) doesn't remount on client-side navigation.
+
+**Deliberately not touched:**
+- `profile-settings.tsx` / `avatar-settings.tsx` already have a working
+  inline "saved"/error pattern next to their buttons — left alone rather
+  than force a redundant refactor onto something that wasn't broken.
+- Onboarding's success path has no toast: `createProfile` is a server action
+  that redirects server-side on success, so there's no client state left to
+  toast from without restructuring the action itself.
+- `/api/delete` and `/api/export` are plain form posts / downloads, not
+  client-side fetches — can't toast without converting them, out of scope
+  for this pass.
+
+Verified with `npx tsc --noEmit` after `npm install` — zero errors across
+every file touched this session.

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Mutawakkil Yusuf
+
 import { NextResponse, type NextRequest } from "next/server";
 import { AVATAR_STYLES, type AvatarStyle } from "@/lib/avatar";
 import { renderAvatarSvg } from "@/lib/avatar-render";
