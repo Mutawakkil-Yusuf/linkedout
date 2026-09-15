@@ -33,23 +33,14 @@ export const AVATAR_STYLE_LABELS: Record<AvatarStyle, string> = {
   shadows: "Shadows",
 };
 
-const DICEBEAR_BASE = "https://api.dicebear.com/10.x";
-
-/** Background tints per style so the grid doesn't look monochrome. */
-const AVATAR_BACKGROUNDS: Record<AvatarStyle, string> = {
-  lorelei: "ffd5c2,ffe9d1,c2e8ff",
-  notionists: "f4d7c3,d9f4c3,c3e0f4",
-  shadows: "e8571f",
-};
-
+/**
+ * Self-hosted avatar route (src/app/api/avatar/[style]/[seed]/route.ts).
+ * Renders the same three DiceBear styles server-side instead of hitting
+ * api.dicebear.com directly, so we don't leak every viewer's IP + the
+ * seed they're looking at to a third party on every page load.
+ */
 export function dicebearUrl(style: AvatarStyle, seed: string, size = 128): string {
-  const params = new URLSearchParams({
-    seed,
-    backgroundType: "gradientLinear",
-    backgroundColor: AVATAR_BACKGROUNDS[style],
-    size: String(size),
-  });
-  return `${DICEBEAR_BASE}/${style}/svg?${params.toString()}`;
+  return `/api/avatar/${style}/${encodeURIComponent(seed)}?size=${size}`;
 }
 
 function randomSeed(): string {
