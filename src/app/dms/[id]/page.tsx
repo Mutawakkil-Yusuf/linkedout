@@ -12,20 +12,22 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: membership } = await supabase
+  const { data: membership, error: membershipError } = await supabase
     .from("dm_members")
     .select("user_id")
     .eq("thread_id", id)
     .eq("user_id", user.id)
     .maybeSingle();
+  if (membershipError) console.error("[dms/:id] membership query error:", membershipError);
   if (!membership) notFound();
 
-  const { data: otherMember } = await supabase
+  const { data: otherMember, error: otherMemberError } = await supabase
     .from("dm_members")
     .select("user_id, profile:profiles!dm_members_user_id_fkey(id, handle, display_name, avatar_style, avatar_seed)")
     .eq("thread_id", id)
     .neq("user_id", user.id)
     .maybeSingle();
+  if (otherMemberError) console.error("[dms/:id] otherMember query error:", otherMemberError);
   if (!otherMember || !otherMember.profile) notFound();
 
   const { data: meProfile } = await supabase
