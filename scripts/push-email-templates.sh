@@ -11,8 +11,8 @@
 #
 # Usage:
 #   export SUPABASE_ACCESS_TOKEN="sbp_..."   # https://supabase.com/dashboard/account/tokens
-#   export SUPABASE_PROJECT_REF="your-ref"   # from your project's dashboard URL
-#   ./scripts/push-email-templates.sh
+#   export SUPABASE_PROJECT_REF="your-ref"   # from your project dashboard URL
+#   bash scripts/push-email-templates.sh
 
 set -euo pipefail
 
@@ -21,8 +21,15 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 1
 fi
 
-: "${SUPABASE_ACCESS_TOKEN:?Set SUPABASE_ACCESS_TOKEN (a personal access token from https://supabase.com/dashboard/account/tokens)}"
-: "${SUPABASE_PROJECT_REF:?Set SUPABASE_PROJECT_REF (from your project's dashboard URL)}"
+if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+  echo "Set SUPABASE_ACCESS_TOKEN to a personal access token from https://supabase.com/dashboard/account/tokens" >&2
+  exit 1
+fi
+
+if [ -z "${SUPABASE_PROJECT_REF:-}" ]; then
+  echo "Set SUPABASE_PROJECT_REF to your project ref from the project dashboard URL" >&2
+  exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATES_DIR="$SCRIPT_DIR/../supabase/templates"
@@ -33,7 +40,7 @@ PAYLOAD=$(jq -n \
   '{
     mailer_subjects_magic_link: "Your way in",
     mailer_templates_magic_link_content: $magic,
-    mailer_subjects_confirmation: "Confirm your email — LinkedOut",
+    mailer_subjects_confirmation: "Confirm your email - LinkedOut",
     mailer_templates_confirmation_content: $conf
   }')
 
