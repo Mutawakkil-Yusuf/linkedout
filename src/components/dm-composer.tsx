@@ -6,8 +6,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/components/toast-provider";
+import { ActionButton } from "@/components/ui/action-button";
 
 type Props = {
   threadId: string;
@@ -34,7 +34,11 @@ export function DmComposer({ threadId, onSent }: Props) {
 
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast("You've been signed out — refresh and try again.", "error"); setPending(false); return; }
+    if (!user) {
+      setPending(false);
+      toast("You've been signed out — refresh and try again.", "error");
+      throw new Error("not signed in");
+    }
 
     const { data, error } = await supabase
       .from("dm_messages")
@@ -43,7 +47,10 @@ export function DmComposer({ threadId, onSent }: Props) {
       .single();
 
     setPending(false);
-    if (error || !data) { toast(error?.message ?? "Couldn't send that — try again.", "error"); return; }
+    if (error || !data) {
+      toast(error?.message ?? "Couldn't send that — try again.", "error");
+      throw error ?? new Error("send failed");
+    }
 
     setBody("");
     onSent(data);
@@ -72,18 +79,18 @@ export function DmComposer({ threadId, onSent }: Props) {
         className="flex-1 resize-none rounded-2xl border border-line bg-card px-4 py-2.5 text-[0.95rem] leading-relaxed text-ink outline-none transition placeholder:text-muted focus:border-flame focus:ring-4 focus:ring-flame/10"
         style={{ minHeight: "2.5rem" }}
       />
-      <button
-        type="button"
-        onClick={submit}
+      <ActionButton
+        variant="arrow"
+        size="sm"
+        iconOnly
+        icon={<ArrowUp className="h-4 w-4" strokeWidth={2.5} />}
+        label="Send"
+        successLabel="Sent"
+        errorLabel="Failed"
         disabled={!canSend}
-        aria-label="Send"
-        className={cn(
-          "grid h-10 w-10 flex-none place-items-center rounded-full transition",
-          canSend ? "bg-flame text-white hover:bg-flame-deep" : "bg-line text-muted"
-        )}
-      >
-        <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
-      </button>
+        onPress={submit}
+        className="flex-none"
+      />
     </div>
   );
 }

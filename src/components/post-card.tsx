@@ -133,14 +133,16 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId, r
         <footer className="flex flex-wrap gap-0.5 border-t border-line pt-2">
           <button
             onClick={toggle}
+            disabled={pending}
+            aria-busy={pending}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[0.8rem] font-medium transition",
+              "inline-flex items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[0.8rem] font-medium transition disabled:cursor-default",
               warmed
                 ? "bg-flame/10 text-flame"
                 : "text-muted hover:bg-flame/10 hover:text-flame"
             )}
           >
-            <Heart className={cn("h-4 w-4", warmed && "fill-current")} />
+            <Heart className={cn("h-4 w-4", warmed && "fill-current", pending && "animate-lo-breathe")} />
             {warmed ? "warmed" : "send warmth"}
             {/* Only the author sees the total — everyone else only sees their
                 own warmed/not-warmed state. Matches the DB's own visibility

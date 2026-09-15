@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Composer } from "@/components/composer";
 import { PostCard } from "@/components/post-card";
+import { JoinRoomButton } from "@/components/join-room-button";
 
 export default async function RoomPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -54,19 +55,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
     return (
       <div className="pt-8">
         <Header room={room} />
-        <form
-          action={async () => {
-            "use server";
-            const supabase = await createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            await supabase.from("room_members").insert({ room_id: room.id, user_id: user.id });
-          }}
-        >
-          <button className="rounded-full bg-flame px-5 py-2.5 text-[0.9rem] font-semibold text-white transition hover:bg-flame-deep">
-            Join room
-          </button>
-        </form>
+        <JoinRoomButton roomId={room.id} slug={room.slug} />
       </div>
     );
   }

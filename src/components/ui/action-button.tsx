@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Mutawakkil Yusuf
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type Variant = "slot" | "stamp" | "fill" | "arrow";
@@ -20,6 +20,11 @@ interface Props {
   type?: "button" | "submit";
   disabled?: boolean;
   className?: string;
+  /** Leading icon shown before the label (hidden once phase leaves idle/pressing). */
+  icon?: ReactNode;
+  /** Render icon only, label kept for a11y (aria-label + sr-only) but visually hidden. */
+  iconOnly?: boolean;
+  "aria-label"?: string;
 }
 
 const PRESS_MS = 90;
@@ -37,6 +42,9 @@ export function ActionButton({
   type = "button",
   disabled = false,
   className,
+  icon,
+  iconOnly = false,
+  "aria-label": ariaLabel,
 }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [reduce, setReduce] = useState(false);
@@ -101,12 +109,14 @@ export function ActionButton({
       disabled={disabled || isLoading || showSuccess}
       onClick={handleClick}
       aria-busy={isLoading}
+      aria-label={iconOnly ? (ariaLabel ?? label) : ariaLabel}
       data-phase={phase}
       data-variant={variant}
       className={cn(
         "lo-btn",
         `lo-btn-${variant}`,
         size === "sm" ? "lo-btn-sm" : "lo-btn-md",
+        iconOnly && "lo-btn-icon-only",
         phase === "pressing" && "is-pressing",
         phase === "loading" && "is-loading",
         showSuccess && "is-success",
@@ -133,7 +143,8 @@ export function ActionButton({
       {/* label stack — three labels, one grid cell */}
       <span className="lo-btn-label-stack">
         <span data-show={showBase}>
-          {label}
+          {icon && <span className="lo-btn-icon" aria-hidden="true">{icon}</span>}
+          <span className={iconOnly ? "sr-only" : undefined}>{label}</span>
           {variant === "arrow" && (
             <span className="lo-btn-arrow-el" aria-hidden="true">→</span>
           )}

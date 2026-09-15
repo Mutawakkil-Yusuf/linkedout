@@ -85,6 +85,15 @@ html, body {
 .lo-btn-md { padding: 0.7rem 1.5rem;  font-size: 0.9rem; }
 .lo-btn.is-pressing { transform: scale(0.97); }
 
+.lo-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.45rem;
+}
+.lo-btn-icon-only.lo-btn-sm { width: 2.5rem;  height: 2.5rem;  padding: 0; }
+.lo-btn-icon-only.lo-btn-md { width: 2.75rem; height: 2.75rem; padding: 0; }
+.lo-btn-icon-only .lo-btn-icon { margin-right: 0; }
+
 /* Label stack — three labels overlap in one grid cell.
    Button width = widest label. No resize, no cut. */
 .lo-btn-label-stack {
