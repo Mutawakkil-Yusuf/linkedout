@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Hash, MessageCircle, User, Settings } from "lucide-react";
-import { Lockup, LogoMark } from "@/components/logo";
+import { Wordmark, Lockup, LogoMark } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
 export const NO_CHROME_PATHS = new Set(["/", "/login", "/onboard", "/motion"]);
@@ -34,14 +34,17 @@ export function Topbar() {
 
   return (
     <>
-      {/* Mobile / tablet: sticky horizontal bar, unchanged from before */}
+      {/* Mobile / tablet: sticky horizontal bar, one row — wordmark only
+          (no icon mark), nav tabs right-aligned. flex-nowrap keeps brand
+          and tabs on a single line at all times; if space ever runs out
+          the tabs scroll horizontally instead of wrapping to a second row. */}
       <header className="sticky top-0 z-20 border-b border-line bg-paper/85 backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex max-w-[40rem] flex-wrap items-center gap-2 px-4 py-3 sm:gap-4 sm:px-5">
-          <Link href="/rooms" className="flex flex-none items-center"><Lockup size={26} wordmarkSize="sm" /></Link>
-          <nav className="ml-auto flex flex-wrap justify-end gap-1">
+        <div className="mx-auto flex max-w-[40rem] flex-nowrap items-center gap-2 px-4 py-3 sm:gap-4 sm:px-5">
+          <Link href="/rooms" className="flex flex-none items-center"><Wordmark size="sm" /></Link>
+          <nav className="ml-auto flex flex-nowrap items-center gap-1 overflow-x-auto">
             {TABS.map((t) => (
               <Link key={t.href} href={t.href}
-                className={cn("rounded-[10px] px-2.5 py-1.5 text-[0.85rem] font-medium transition-colors sm:px-3.5 sm:text-[0.875rem]",
+                className={cn("flex-none whitespace-nowrap rounded-[10px] px-2.5 py-1.5 text-[0.85rem] font-medium transition-colors sm:px-3.5 sm:text-[0.875rem]",
                   isActive(pathname, t.href) ? "bg-flame/10 text-flame" : "text-muted hover:bg-paper-2 hover:text-ink")}>
                 {t.label}
               </Link>

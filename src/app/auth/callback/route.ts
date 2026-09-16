@@ -14,5 +14,19 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(`${origin}/login`);
   const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
-  return NextResponse.redirect(`${origin}${profile ? "/rooms" : "/onboard"}`);
+  const dest = profile ? "/rooms" : "/onboard";
+
+  // The magic link always opens in the system browser, not the
+  // installed standalone PWA — they're separate storage contexts, so
+  // the session we just created here is invisible to the installed
+  // app icon on the home screen. Redirecting straight to `dest` would
+  // only sign in this throwaway browser tab; the person would then
+  // switch back to the app and still see it signed out.
+  //
+  // So: complete the redirect as normal for a plain-browser visitor
+  // (?pwa=1 is absent), but when we can tell this link was opened
+  // from a PWA-aware context, land on a small bridge page that tells
+  // the person to switch back to the app instead of silently stranding
+  // them in the browser tab.
+  return NextResponse.redirect(`${origin}/auth/callback/done?next=${encodeURIComponent(dest)}`);
 }
