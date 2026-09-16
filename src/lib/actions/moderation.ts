@@ -303,6 +303,54 @@ export async function unbanUser(input: z.infer<typeof unbanSchema>): Promise<Res
   return { ok: true };
 }
 
+// ─────────────── kick (remove membership only, no ban) ───────────────
+const kickSchema = z.object({
+  roomId: z.string().uuid(),
+  userId: z.string().uuid(),
+  reason: z.string().min(1).max(280),
+});
+
+export async function kickMember(input: z.infer<typeof kickSchema>): Promise<Result> {
+  const parsed = kickSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Invalid" };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in" };
+  if (parsed.data.userId === user.id) return { ok: false, error: "You can't kick yourself — use leave room instead" };
+
+  const { data: isMod } = await supabase.rpc("is_room_mod", { p_room: parsed.data.roomId, p_user: user.id });
+  if (!isMod) return { ok: false, error: "Not a moderator" };
+
+  const { data: target } = await supabase
+    .from("room_members").select("role")
+    .eq("room_id", parsed.data.roomId).eq("user_id", parsed.data.userId).maybeSingle();
+  if (!target) return { ok: false, error: "That person isn't in this room" };
+  if (target.role === "owner") return { ok: false, error: "Cannot kick the room owner" };
+
+  const { error } = await supabase
+    .from("room_members")
+    .delete()
+    .eq("room_id", parsed.data.roomId)
+    .eq("user_id", parsed.data.userId);
+  if (error) return { ok: false, error: error.message };
+
+  await logModAction(supabase, {
+    roomId: parsed.data.roomId, modId: user.id,
+    action: "remove_member", reason: parsed.data.reason,
+    targetUserId: parsed.data.userId,
+  });
+
+  const slug = await slugFor(supabase, parsed.data.roomId);
+
+  await notifyTarget(supabase, user.id, parsed.data.userId,
+    `You were removed from #${slug ?? "a room"} by a moderator.\n\nReason: ${parsed.data.reason}\n\nYou're welcome to rejoin — this isn't a ban.`);
+
+  revalidateRoom(slug);
+  if (slug) revalidatePath(`/rooms/${slug}/mod/members`);
+  return { ok: true };
+}
+
 // ─────────────── handle a report ───────────────
 const handleSchema = z.object({
   reportId: z.string().uuid(),

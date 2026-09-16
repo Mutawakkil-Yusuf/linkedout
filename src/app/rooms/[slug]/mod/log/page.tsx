@@ -15,6 +15,7 @@ const VERBS: Record<string, string> = {
   remove_reply: "removed a reply",
   ban_user: "banned a member",
   unban_user: "unbanned a member",
+  remove_member: "removed a member",
   appoint_mod: "appointed a moderator",
   remove_mod: "removed a moderator",
   dismiss_report: "dismissed a report",

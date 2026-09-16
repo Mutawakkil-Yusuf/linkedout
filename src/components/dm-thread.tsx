@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowLeft } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { DmComposer } from "@/components/dm-composer";
 import { createClient } from "@/lib/supabase/client";
@@ -99,31 +99,31 @@ export function DmThread({ threadId, me, other, initialMessages }: Props) {
       <header className="mb-4 flex items-center gap-3 border-b border-line pb-4">
         <Link
           href="/dms"
-          className="font-mono text-[0.72rem] text-muted underline decoration-line underline-offset-4 hover:text-ink"
+          aria-label="Back to inbox"
+          className="flex-none rounded-full p-1.5 -ml-1.5 text-muted transition hover:bg-paper-2 hover:text-ink"
         >
-          ← inbox
+          <ArrowLeft className="h-4 w-4" strokeWidth={2.25} />
         </Link>
-        <div className="ml-auto flex items-center gap-2.5">
+        <Link href={`/u/${other.handle}`} className="group flex min-w-0 flex-1 items-center gap-2.5">
           <Avatar handle={other.handle} avatarStyle={other.avatar_style} avatarSeed={other.avatar_seed} size="sm" />
-          <div className="text-right leading-tight">
-            <div className="text-[0.9rem] font-semibold">
+          <div className="min-w-0 leading-tight">
+            <div className="truncate text-[0.9rem] font-semibold text-ink group-hover:text-flame">
               {other.display_name ?? other.handle}
             </div>
-            <Link
-              href={`/u/${other.handle}`}
-              className="font-mono text-[0.72rem] text-muted hover:text-flame"
-            >
-              @{other.handle}
-            </Link>
+            <div className="font-mono text-[0.72rem] text-muted">@{other.handle}</div>
           </div>
-        </div>
+        </Link>
       </header>
 
       <div className="space-y-3 pb-6">
         {messages.length === 0 ? (
-          <p className="py-12 text-center text-[0.95rem] text-muted">
-            Say hi. No pressure.
-          </p>
+          <div className="flex flex-col items-center gap-2 py-16 text-center">
+            <Avatar handle={other.handle} avatarStyle={other.avatar_style} avatarSeed={other.avatar_seed} size="lg" />
+            <p className="mt-2 text-[0.95rem] font-medium text-ink">
+              {other.display_name ?? other.handle}
+            </p>
+            <p className="text-[0.85rem] text-muted">Say hi. No pressure.</p>
+          </div>
         ) : (
           messages.map((m, i) => {
             const prev = messages[i - 1];

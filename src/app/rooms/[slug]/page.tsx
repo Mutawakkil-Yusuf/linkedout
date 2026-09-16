@@ -1,23 +1,27 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Mutawakkil Yusuf
 
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Composer } from "@/components/composer";
 import { PostCard } from "@/components/post-card";
 import { JoinRoomButton } from "@/components/join-room-button";
+import { RoomHeader } from "@/components/room-header";
 
 export default async function RoomPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = await createClient();
 
   const { data: room } = await supabase
-    .from("rooms").select("id, slug, name, description").eq("slug", slug).maybeSingle();
+    .from("rooms").select("id, slug, name, description, created_at").eq("slug", slug).maybeSingle();
   if (!room) notFound();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const { count: memberCount } = await supabase
+    .from("room_members").select("user_id", { count: "exact", head: true })
+    .eq("room_id", room.id);
 
   const { data: ban } = await supabase
     .from("room_bans").select("reason, created_at")
@@ -26,7 +30,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
   if (ban) {
     return (
       <div className="pt-8">
-        <Header room={room} />
+        <RoomHeader room={room} memberCount={memberCount ?? 0} />
         <div className="rounded-card border border-flame/20 bg-flame/5 p-5">
           <p className="mb-1 font-display text-[1.05rem] font-bold tracking-[-0.02em] text-flame-deep">
             You're banned from this room
@@ -38,7 +42,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
   }
 
   const { data: membership } = await supabase
-    .from("room_members").select("role")
+    .from("room_members").select("role, joined_at")
     .eq("room_id", room.id).eq("user_id", user.id).maybeSingle();
 
   const isMod = membership?.role === "mod" || membership?.role === "owner";
@@ -54,7 +58,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
   if (!membership) {
     return (
       <div className="pt-8">
-        <Header room={room} />
+        <RoomHeader room={room} memberCount={memberCount ?? 0} />
         <JoinRoomButton roomId={room.id} slug={room.slug} />
       </div>
     );
@@ -76,7 +80,14 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="pt-8">
-      <Header room={room} isMod={isMod} openReports={openReports} />
+      <RoomHeader
+        room={room}
+        memberCount={memberCount ?? 0}
+        role={membership.role}
+        joinedAt={membership.joined_at}
+        isMod={isMod}
+        openReports={openReports}
+      />
       <Composer roomId={room.id} />
       <ul>
         {posts?.length ? posts.map((p: any) => (
@@ -97,49 +108,5 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
         )}
       </ul>
     </div>
-  );
-}
-
-function Header({
-  room, isMod, openReports,
-}: {
-  room: { slug: string; name: string; description: string | null };
-  isMod?: boolean;
-  openReports?: number;
-}) {
-  return (
-    <header className="mb-6 flex items-start justify-between gap-4">
-      <div>
-        <h1 className="break-words font-display text-[1.6rem] font-bold tracking-[-0.025em]">
-          <span className="font-mono text-flame">#</span>{room.slug}
-        </h1>
-        <p className="mt-1 text-[0.9rem] text-muted">{room.name}</p>
-        {room.description && (
-          <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-2">{room.description}</p>
-        )}
-      </div>
-
-      {isMod && (
-        <div className="flex flex-none items-center gap-3 pt-1">
-          <Link
-            href={`/rooms/${room.slug}/mod/log`}
-            className="font-mono text-[0.72rem] text-muted underline decoration-line underline-offset-4 hover:text-ink"
-          >
-            log
-          </Link>
-          <Link
-            href={`/rooms/${room.slug}/mod`}
-            className="inline-flex items-center gap-1.5 rounded-full bg-flame/10 px-3 py-1.5 font-mono text-[0.72rem] font-medium text-flame transition hover:bg-flame/15"
-          >
-            mod
-            {openReports ? (
-              <span className="rounded-full bg-flame px-1.5 text-[0.65rem] font-bold text-white">
-                {openReports}
-              </span>
-            ) : null}
-          </Link>
-        </div>
-      )}
-    </header>
   );
 }
