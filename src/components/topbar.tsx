@@ -34,14 +34,14 @@ export function Topbar() {
 
   return (
     <>
-      {/* Mobile / tablet: sticky horizontal bar, one row — wordmark only
-          (no icon mark), nav tabs right-aligned. flex-nowrap keeps brand
-          and tabs on a single line at all times; if space ever runs out
-          the tabs scroll horizontally instead of wrapping to a second row. */}
+      {/* Mobile / tablet: sticky bar. On small screens (below `sm`), the
+          wordmark and nav tabs stack into two rows, both starting at the
+          same left edge — same padded container, no extra indent on the
+          nav row. From `sm` up they sit back on one row as before. */}
       <header className="sticky top-0 z-20 border-b border-line bg-paper/85 backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex max-w-[40rem] flex-nowrap items-center gap-2 px-4 py-3 sm:gap-4 sm:px-5">
+        <div className="mx-auto flex max-w-[40rem] flex-col gap-2 px-4 py-3 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-4 sm:px-5">
           <Link href="/rooms" className="flex flex-none items-center"><Wordmark size="sm" /></Link>
-          <nav className="ml-auto flex flex-nowrap items-center gap-1 overflow-x-auto">
+          <nav className="flex flex-nowrap items-center gap-1 overflow-x-auto sm:ml-auto">
             {TABS.map((t) => (
               <Link key={t.href} href={t.href}
                 className={cn("flex-none whitespace-nowrap rounded-[10px] px-2.5 py-1.5 text-[0.85rem] font-medium transition-colors sm:px-3.5 sm:text-[0.875rem]",
