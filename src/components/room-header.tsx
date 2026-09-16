@@ -76,7 +76,27 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
           aria-hidden
         />
 
-        <div className="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-muted">
+        <div className="mb-1 flex flex-wrap items-baseline gap-x-3">
+          <h1 className="break-words font-display text-[1.75rem] font-bold leading-[1.08] tracking-[-0.03em]">
+            <span
+              className="mr-0.5 font-mono text-[1.35rem] font-medium"
+              style={{ color: "var(--room-accent)" }}
+            >
+              #
+            </span>
+            {room.slug}
+          </h1>
+          <span className="inline-flex items-center gap-1.5 font-mono text-[0.78rem] text-muted">
+            <Users className="h-3.5 w-3.5" strokeWidth={2} />
+            {memberCount} {memberCount === 1 ? "member" : "members"}
+          </span>
+        </div>
+
+        {room.name && (
+          <p className="mb-2.5 max-w-[38rem] text-[0.95rem] text-ink-2">{room.name}</p>
+        )}
+
+        <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[0.68rem] text-muted">
           <span className="inline-flex items-center gap-1.5">
             <span
               className="inline-block h-1.5 w-1.5 rounded-full"
@@ -85,28 +105,23 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
             />
             {VISIBILITY_LABEL[room.visibility] ?? room.visibility}
           </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Users className="h-3 w-3" strokeWidth={2} />
-            {memberCount} {memberCount === 1 ? "member" : "members"}
-          </span>
+          <span aria-hidden className="text-line-2">·</span>
           <span>opened {fmtDate(room.created_at)}</span>
-          {isMember && joinedAt && <span>you joined {fmtDate(joinedAt)}</span>}
-          {isOwner && <span style={{ color: "var(--room-accent)" }}>you own this room</span>}
+          {isMember && joinedAt && (
+            <>
+              <span aria-hidden className="text-line-2">·</span>
+              <span>joined {fmtDate(joinedAt)}</span>
+            </>
+          )}
+          {isOwner && (
+            <>
+              <span aria-hidden className="text-line-2">·</span>
+              <span className="font-medium" style={{ color: "var(--room-accent)" }}>
+                you own this room
+              </span>
+            </>
+          )}
         </div>
-
-        <h1 className="mb-1 break-words font-display text-[1.75rem] font-bold leading-[1.08] tracking-[-0.03em]">
-          <span
-            className="mr-0.5 font-mono text-[1.35rem] font-medium"
-            style={{ color: "var(--room-accent)" }}
-          >
-            #
-          </span>
-          {room.slug}
-        </h1>
-
-        {room.name && (
-          <p className="mb-4 max-w-[38rem] text-[0.95rem] text-ink-2">{room.name}</p>
-        )}
 
         <div className="flex flex-wrap items-center gap-2">
           {isMember && (

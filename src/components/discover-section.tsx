@@ -7,7 +7,13 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { RoomCard, type RoomListing } from "@/components/room-card";
 
-export function DiscoverSection({ rooms }: { rooms: RoomListing[] }) {
+type Props = {
+  rooms: RoomListing[];
+  /** True when public rooms exist platform-wide, just none the viewer hasn't already joined. */
+  hasJoinedAllPublicRooms?: boolean;
+};
+
+export function DiscoverSection({ rooms, hasJoinedAllPublicRooms = false }: Props) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -42,8 +48,9 @@ export function DiscoverSection({ rooms }: { rooms: RoomListing[] }) {
       {rooms.length === 0 ? (
         <div className="rounded-soft border border-dashed border-line bg-card px-6 py-10 text-center">
           <p className="text-[0.92rem] text-muted">
-            No public rooms right now. Rooms here are often private — you'll
-            see them when someone invites you.
+            {hasJoinedAllPublicRooms
+              ? "You're already in every public room there is. Nothing new to discover right now — check back later, or open one yourself."
+              : "No public rooms yet. Rooms here are often private — you'll see them when someone invites you."}
           </p>
         </div>
       ) : filtered.length === 0 ? (
@@ -53,7 +60,7 @@ export function DiscoverSection({ rooms }: { rooms: RoomListing[] }) {
       ) : (
         <div className="flex flex-col gap-2">
           {filtered.map((r) => (
-            <RoomCard key={r.id} room={r} />
+            <RoomCard key={r.id} room={r} showJoin />
           ))}
         </div>
       )}

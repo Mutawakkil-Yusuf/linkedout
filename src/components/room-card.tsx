@@ -1,9 +1,12 @@
+"use client";
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Mutawakkil Yusuf
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getAccent } from "@/lib/room-theme";
+import { InlineJoinButton } from "@/components/inline-join-button";
 
 export type RoomListing = {
   id: string;
@@ -19,7 +22,7 @@ export type RoomListing = {
   last_post_at: string | null;
 };
 
-export function RoomCard({ room }: { room: RoomListing }) {
+export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJoin?: boolean }) {
   const accent = getAccent(room.accent);
   const isMember = !!room.my_role;
 
@@ -45,10 +48,13 @@ export function RoomCard({ room }: { room: RoomListing }) {
         <span className="font-mono text-[1rem] font-medium" style={{ color: accent.fg }}>
           #
         </span>
-        <h3 className="font-display text-[1.1rem] font-bold tracking-[-0.015em] text-ink">
+        <h3 className="min-w-0 flex-1 font-display text-[1.1rem] font-bold tracking-[-0.015em] text-ink">
           {room.slug}
         </h3>
         {room.my_role && <RolePill role={room.my_role} />}
+        {showJoin && (
+          <InlineJoinButton roomId={room.id} slug={room.slug} />
+        )}
       </div>
 
       {room.name && (
@@ -70,6 +76,7 @@ export function RoomCard({ room }: { room: RoomListing }) {
         )}
 
         <span>{formatActivity(room.last_post_at)}</span>
+        <span className="capitalize">{room.visibility}</span>
       </div>
     </Link>
   );

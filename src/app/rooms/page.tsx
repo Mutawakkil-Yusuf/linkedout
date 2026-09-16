@@ -33,7 +33,9 @@ export default async function RoomsPage() {
     .select("id, slug, name, description, accent, visibility, created_at")
     .eq("visibility", "public");
 
+  const totalPublicRoomCount = publicRows?.length ?? 0;
   const discoverRooms = (publicRows ?? []).filter((r: any) => !myRoomIds.has(r.id));
+  const hasJoinedAllPublicRooms = totalPublicRoomCount > 0 && discoverRooms.length === 0;
 
   const allIds = [
     ...myRooms.map((r) => r.room.id),
@@ -159,7 +161,7 @@ export default async function RoomsPage() {
           )}
         </div>
 
-        <DiscoverSection rooms={discover} />
+        <DiscoverSection rooms={discover} hasJoinedAllPublicRooms={hasJoinedAllPublicRooms} />
       </section>
 
       <p className="mt-16 border-t border-line pt-6 text-center font-mono text-[0.7rem] tracking-[0.06em] text-muted">
