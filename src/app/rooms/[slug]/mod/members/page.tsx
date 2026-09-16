@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { MemberRow } from "@/components/member-row";
+import { MembersPanel } from "@/components/members-panel";
 
 export default async function ModMembersPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -22,7 +22,7 @@ export default async function ModMembersPage({ params }: { params: Promise<{ slu
     .eq("room_id", room.id).eq("user_id", user.id).maybeSingle();
   const isMod = viewerMembership?.role === "mod" || viewerMembership?.role === "owner";
   if (!isMod) redirect(`/rooms/${slug}`);
-  const isOwnerViewer = viewerMembership?.role === "owner";
+  const viewerRole = (viewerMembership?.role ?? "member") as "member" | "mod" | "owner";
 
   const { data: members } = await supabase
     .from("room_members")
@@ -62,22 +62,18 @@ export default async function ModMembersPage({ params }: { params: Promise<{ slu
       </header>
 
       {sorted.length ? (
-        <ul className="divide-y divide-line rounded-card border border-line bg-card">
-          {sorted.map((m: any) => (
-            <li key={m.user_id}>
-              <MemberRow
-                roomId={room.id}
-                slug={room.slug}
-                userId={m.user_id}
-                role={m.role}
-                joinedAt={m.joined_at}
-                profile={m.profile}
-                isSelf={m.user_id === user.id}
-                isOwnerViewer={isOwnerViewer}
-              />
-            </li>
-          ))}
-        </ul>
+        <MembersPanel
+          roomId={room.id}
+          roomSlug={room.slug}
+          members={sorted.map((m: any) => ({
+            user_id: m.user_id,
+            role: m.role,
+            joined_at: m.joined_at,
+            profile: m.profile,
+          }))}
+          viewerRole={viewerRole}
+          viewerId={user.id}
+        />
       ) : (
         <div className="rounded-card border border-line bg-card p-8 text-center text-[0.95rem] text-muted">
           No members found.

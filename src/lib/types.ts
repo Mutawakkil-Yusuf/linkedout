@@ -19,7 +19,9 @@ export type Room = {
   slug: string;
   name: string;
   description: string | null;
-  visibility: "public" | "unlisted";
+  visibility: "public" | "unlisted" | "private";
+  accent: "flame" | "moss" | "amber" | "plum" | "sage" | "indigo";
+  pinned_post_id: string | null;
   created_by: string | null;
   created_at: string;
 };
@@ -29,6 +31,7 @@ export type Post = {
   author_id: string;
   room_id: string | null;
   body: string;
+  mode: "normal" | "spoiler" | "quiet";
   created_at: string;
   edited_at: string | null;
   deleted_at: string | null;
@@ -70,8 +73,10 @@ export type ModAction = {
     | "hide_post" | "unhide_post" | "remove_post"
     | "hide_reply" | "unhide_reply" | "remove_reply"
     | "ban_user" | "unban_user"
+    | "remove_member"
     | "appoint_mod" | "remove_mod"
-    | "dismiss_report" | "resolve_report";
+    | "dismiss_report" | "resolve_report"
+    | "pin_post" | "unpin_post";
   target_post_id: string | null;
   target_reply_id: string | null;
   target_user_id: string | null;

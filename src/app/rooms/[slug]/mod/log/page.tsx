@@ -20,6 +20,8 @@ const VERBS: Record<string, string> = {
   remove_mod: "removed a moderator",
   dismiss_report: "dismissed a report",
   resolve_report: "resolved a report",
+  pin_post: "pinned a post to the room",
+  unpin_post: "unpinned a post from the room",
 };
 
 export default async function ModLogPage({ params }: { params: Promise<{ slug: string }> }) {

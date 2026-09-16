@@ -6,18 +6,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Trash2, Users } from "lucide-react";
+import { LogOut, Trash2, UserPlus, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ActionButton } from "@/components/ui/action-button";
-import { avatarGradient } from "@/lib/avatar";
-import { fmtDate } from "@/lib/utils";
+import { InviteDialog } from "@/components/invite-dialog";
 import { leaveRoom, deleteRoom } from "@/lib/actions/rooms";
 import { useToast } from "@/components/toast-provider";
+import { fmtDate } from "@/lib/utils";
 
 type Room = {
   id: string;
   slug: string;
   name: string;
   description: string | null;
+  visibility: string;
   created_at: string;
 };
 
@@ -30,9 +32,16 @@ type Props = {
   openReports?: number;
 };
 
+const VISIBILITY_LABEL: Record<string, string> = {
+  public: "public",
+  unlisted: "unlisted",
+  private: "private",
+};
+
 export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openReports }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [confirmingLeave, setConfirmingLeave] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [typedSlug, setTypedSlug] = useState("");
@@ -59,108 +68,112 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
   }
 
   return (
-    <header className="mb-6 overflow-hidden rounded-card border border-line bg-card">
-      <div
-        className="h-16 w-full"
-        style={{ background: avatarGradient(room.slug) }}
-        aria-hidden="true"
-      />
-      <div className="px-5 pb-5">
-        <div className="-mt-8 mb-3 flex items-end justify-between gap-3">
-          <div
-            className="flex h-16 w-16 flex-none items-center justify-center rounded-[16px] border-4 border-card font-display text-[1.3rem] font-bold text-white shadow-card"
-            style={{ background: avatarGradient(room.slug) }}
-            aria-hidden="true"
+    <>
+      <header className="mb-6 border-b border-line pb-5">
+        <div
+          className="mb-4 h-1 rounded-full"
+          style={{ background: "var(--room-accent)" }}
+          aria-hidden
+        />
+
+        <div className="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-muted">
+          <span className="inline-flex items-center gap-1.5">
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full"
+              style={{ background: "var(--room-accent)" }}
+              aria-hidden
+            />
+            {VISIBILITY_LABEL[room.visibility] ?? room.visibility}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Users className="h-3 w-3" strokeWidth={2} />
+            {memberCount} {memberCount === 1 ? "member" : "members"}
+          </span>
+          <span>opened {fmtDate(room.created_at)}</span>
+          {isMember && joinedAt && <span>you joined {fmtDate(joinedAt)}</span>}
+          {isOwner && <span style={{ color: "var(--room-accent)" }}>you own this room</span>}
+        </div>
+
+        <h1 className="mb-1 break-words font-display text-[1.75rem] font-bold leading-[1.08] tracking-[-0.03em]">
+          <span
+            className="mr-0.5 font-mono text-[1.35rem] font-medium"
+            style={{ color: "var(--room-accent)" }}
           >
             #
-          </div>
+          </span>
+          {room.slug}
+        </h1>
+
+        {room.name && (
+          <p className="mb-4 max-w-[38rem] text-[0.95rem] text-ink-2">{room.name}</p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          {isMember && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setInviteOpen(true)}
+                className="gap-1.5"
+              >
+                <UserPlus className="h-3.5 w-3.5" strokeWidth={2.25} />
+                Invite
+              </Button>
+              <Button
+                variant="quiet"
+                size="sm"
+                onClick={() => setConfirmingLeave(true)}
+                className="gap-1.5"
+              >
+                <LogOut className="h-3.5 w-3.5" strokeWidth={2.25} />
+                Leave
+              </Button>
+              {isOwner && (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => setConfirmingDelete(true)}
+                  className="gap-1.5"
+                >
+                  <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  Delete
+                </Button>
+              )}
+            </>
+          )}
 
           {isMod && (
-            <div className="flex flex-none flex-wrap items-center justify-end gap-3 pb-1">
+            <div className="flex w-full flex-wrap items-center gap-3 pt-1 font-mono text-[0.72rem] sm:ml-auto sm:w-auto sm:pt-0">
               <Link
                 href={`/rooms/${room.slug}/mod/members`}
-                className="font-mono text-[0.72rem] text-muted underline decoration-line underline-offset-4 hover:text-ink"
+                className="text-muted underline decoration-line-2 underline-offset-[3px] transition hover:text-ink hover:decoration-ink"
               >
                 members
               </Link>
               <Link
                 href={`/rooms/${room.slug}/mod/log`}
-                className="font-mono text-[0.72rem] text-muted underline decoration-line underline-offset-4 hover:text-ink"
+                className="text-muted underline decoration-line-2 underline-offset-[3px] transition hover:text-ink hover:decoration-ink"
               >
                 log
               </Link>
               <Link
                 href={`/rooms/${room.slug}/mod`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-flame/10 px-3 py-1.5 font-mono text-[0.72rem] font-medium text-flame transition hover:bg-flame/15"
+                className="inline-flex items-center gap-1.5 rounded-full bg-flame/10 px-3 py-1.5 font-medium text-flame transition hover:bg-flame/15"
               >
                 mod
-                {openReports ? (
-                  <span className="rounded-full bg-flame px-1.5 text-[0.65rem] font-bold text-white">
-                    {openReports}
+                {(openReports ?? 0) > 0 && (
+                  <span className="rounded-full bg-flame px-1.5 text-[0.62rem] font-bold text-white">
+                    {(openReports ?? 0) > 99 ? "99+" : openReports}
                   </span>
-                ) : null}
+                )}
               </Link>
             </div>
           )}
         </div>
+      </header>
 
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="break-words font-display text-[1.6rem] font-bold tracking-[-0.025em]">
-              <span className="font-mono text-flame">#</span>{room.slug}
-            </h1>
-            <p className="mt-0.5 text-[0.9rem] text-muted">{room.name}</p>
-          </div>
-
-          {isMember && (
-            <div className="flex flex-none items-center gap-2">
-              {isOwner && (
-                <button
-                  type="button"
-                  onClick={() => setConfirmingDelete(true)}
-                  className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 font-mono text-[0.72rem] text-muted transition hover:border-flame/30 hover:text-flame"
-                >
-                  <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
-                  delete
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setConfirmingLeave(true)}
-                className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 font-mono text-[0.72rem] text-muted transition hover:border-flame/30 hover:text-flame"
-              >
-                <LogOut className="h-3.5 w-3.5" strokeWidth={2.25} />
-                leave
-              </button>
-            </div>
-          )}
-        </div>
-
-        {room.description && (
-          <p className="mt-2.5 text-[0.95rem] leading-relaxed text-ink-2">{room.description}</p>
-        )}
-
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-line pt-3.5 font-mono text-[0.72rem] text-muted">
-          <span className="inline-flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" strokeWidth={2} />
-            {memberCount} {memberCount === 1 ? "member" : "members"}
-          </span>
-          <span aria-hidden="true">·</span>
-          <span>opened {fmtDate(room.created_at)}</span>
-          {isMember && joinedAt && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>you joined {fmtDate(joinedAt)}</span>
-            </>
-          )}
-          {isOwner && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span className="text-flame">you own this room</span>
-            </>
-          )}
-        </div>
-      </div>
+      <InviteDialog open={inviteOpen} onClose={() => setInviteOpen(false)} roomId={room.id} />
 
       {confirmingLeave && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6">
@@ -178,7 +191,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
                 ? otherMembers > 0
                   ? "You own this room. Ownership will automatically pass to whoever's been here longest — a mod first, or the earliest-joined member if there's no mod. Your past posts and replies stay as they are. You can rejoin any time, just not as owner."
                   : "You're the only person here. Leaving will empty the room — it'll stay open with no owner until someone joins."
-                : "You'll stop seeing posts from this room. Your past posts and replies here stay as they are. You can rejoin any time."}
+                : "You'll stop seeing posts from this room. Your past posts and replies here stay as they are. You can rejoin any time this room allows it."}
             </p>
             <div className="flex items-center justify-end gap-2">
               <button
@@ -252,6 +265,6 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }

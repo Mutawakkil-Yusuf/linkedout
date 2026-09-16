@@ -5,18 +5,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Heart, MessageCircle, MoreHorizontal, Flag } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Eye, EyeOff, Pin, PinOff } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { ReportDialog } from "@/components/report-dialog";
 import { createClient } from "@/lib/supabase/client";
+import { pinPost, unpinPost } from "@/lib/actions/rooms";
 import { cn, relativeTime } from "@/lib/utils";
 import type { Post, Profile } from "@/lib/types";
+
+type Mode = "normal" | "spoiler" | "quiet";
 
 type Props = {
   post: Pick<Post, "id" | "body" | "created_at"> & {
     hidden_at?: string | null;
     room_id?: string | null;
     author_id?: string;
+    mode?: Mode;
   };
   author: Pick<Profile, "handle" | "display_name" | "avatar_style" | "avatar_seed"> | null;
   warmed?: boolean;
@@ -25,16 +29,36 @@ type Props = {
   replyCount?: number;
   /** total reactions — only ever rendered when the viewer is the post's author (see below) */
   warmthCount?: number;
+  /** whether the viewer can moderate this room — gates the pin/unpin menu item */
+  isMod?: boolean;
+  /** whether this post is the room's currently pinned post */
+  isPinned?: boolean;
 };
 
-export function PostCard({ post, author, warmed: warm0 = false, currentUserId, replyCount = 0, warmthCount = 0 }: Props) {
+export function PostCard({
+  post,
+  author,
+  warmed: warm0 = false,
+  currentUserId,
+  replyCount = 0,
+  warmthCount = 0,
+  isMod = false,
+  isPinned = false,
+}: Props) {
   const [warmed, setWarmed] = useState(warm0);
   const [pending, setPending] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const [pinBusy, setPinBusy] = useState(false);
+  const [pinError, setPinError] = useState<string | null>(null);
 
   const isHidden = !!post.hidden_at;
   const isAuthor = currentUserId && post.author_id === currentUserId;
+  const mode: Mode = post.mode ?? "normal";
+  const isSpoiler = mode === "spoiler" && !revealed && !isAuthor;
+  const isQuiet = mode === "quiet";
+  const showMenu = (!isAuthor && !!post.room_id) || (isMod && !!post.room_id);
 
   async function toggle() {
     if (pending || !author) return;
@@ -53,6 +77,18 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId, r
     setPending(false);
   }
 
+  async function togglePin() {
+    if (pinBusy || !post.room_id) return;
+    setPinBusy(true);
+    setPinError(null);
+    setMenuOpen(false);
+
+    const fn = isPinned ? unpinPost : pinPost;
+    const res = await fn({ roomId: post.room_id, postId: post.id });
+    setPinBusy(false);
+    if (!res.ok) setPinError(res.error);
+  }
+
   return (
     <article
       className={cn(
@@ -63,13 +99,21 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId, r
       )}
     >
       {warmed && !isHidden && (
-        <span className="absolute inset-y-0 left-0 w-[3px] bg-flame" aria-hidden />
+        <span
+          className="absolute inset-y-0 left-0 w-[3px]"
+          style={{ background: "var(--room-accent, #e8571f)" }}
+          aria-hidden
+        />
       )}
 
       {isHidden && (
         <div className="mb-3 rounded-[10px] border border-flame/20 bg-flame/5 px-3 py-2 text-[0.82rem] text-flame-deep">
           This post is hidden. Only you and moderators can see it.
         </div>
+      )}
+
+      {pinError && (
+        <p className="mb-2 text-[0.8rem] text-flame-deep">{pinError}</p>
       )}
 
       <header className="mb-2 flex items-center gap-2.5">
@@ -90,12 +134,27 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId, r
           </Link>
         </div>
 
+        {isQuiet && !isAuthor && (
+          <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-paper-2 px-2 py-0.5 font-mono text-[0.62rem] uppercase tracking-wider text-muted">
+            quiet
+          </span>
+        )}
+        {isPinned && (
+          <span
+            className="ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[0.62rem] uppercase tracking-wider"
+            style={{ background: "var(--room-accent-bg, rgba(232, 87, 31, 0.07))", color: "var(--room-accent, #e8571f)" }}
+          >
+            <Pin className="h-2.5 w-2.5" strokeWidth={2.5} />
+            pinned
+          </span>
+        )}
+
         <div className="relative ml-auto flex flex-none items-center gap-1">
           <time className="font-mono text-[0.72rem] text-muted">
             {relativeTime(post.created_at)}
           </time>
 
-          {!isAuthor && post.room_id && (
+          {showMenu && (
             <>
               <button
                 type="button"
@@ -107,14 +166,33 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId, r
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 top-9 z-10 w-40 overflow-hidden rounded-soft border border-line bg-card shadow-card">
-                  <button
-                    type="button"
-                    onClick={() => { setMenuOpen(false); setReportOpen(true); }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[0.85rem] text-ink transition hover:bg-paper-2"
-                  >
-                    <Flag className="h-3.5 w-3.5" /> Report
-                  </button>
+                <div className="absolute right-0 top-9 z-10 w-44 overflow-hidden rounded-soft border border-line bg-card shadow-card">
+                  {isMod && post.room_id && (
+                    <button
+                      type="button"
+                      onClick={togglePin}
+                      disabled={pinBusy}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[0.85rem] text-ink transition hover:bg-paper-2 disabled:opacity-50"
+                    >
+                      {isPinned ? (
+                        <><PinOff className="h-3.5 w-3.5" /> Unpin from room</>
+                      ) : (
+                        <><Pin className="h-3.5 w-3.5" /> Pin to room</>
+                      )}
+                    </button>
+                  )}
+                  {!isAuthor && post.room_id && (
+                    <button
+                      type="button"
+                      onClick={() => { setMenuOpen(false); setReportOpen(true); }}
+                      className={cn(
+                        "flex w-full items-center gap-2 px-3 py-2 text-left text-[0.85rem] text-ink transition hover:bg-paper-2",
+                        isMod && "border-t border-line"
+                      )}
+                    >
+                      <Flag className="h-3.5 w-3.5" /> Report
+                    </button>
+                  )}
                 </div>
               )}
             </>
@@ -122,12 +200,39 @@ export function PostCard({ post, author, warmed: warm0 = false, currentUserId, r
         </div>
       </header>
 
-      <p className={cn(
-        "mb-2.5 whitespace-pre-wrap break-words text-[1rem] leading-relaxed",
-        isHidden ? "text-muted" : "text-ink"
-      )}>
-        {post.body}
-      </p>
+      {isSpoiler ? (
+        <button
+          type="button"
+          onClick={() => setRevealed(true)}
+          className="group mb-2.5 flex w-full items-center gap-3 rounded-soft border border-line bg-paper-2 px-3 py-3 text-left transition hover:bg-paper"
+        >
+          <EyeOff className="h-4 w-4 flex-none text-muted" />
+          <span className="text-[0.9rem] text-muted">
+            Spoiler.{" "}
+            <span className="underline decoration-line-2 underline-offset-2 group-hover:decoration-ink">
+              Click to reveal.
+            </span>
+          </span>
+        </button>
+      ) : (
+        <>
+          {mode === "spoiler" && !isAuthor && (
+            <button
+              type="button"
+              onClick={() => setRevealed(false)}
+              className="mb-1.5 inline-flex items-center gap-1 font-mono text-[0.68rem] uppercase tracking-wider text-muted transition hover:text-ink"
+            >
+              <Eye className="h-3 w-3" /> hide again
+            </button>
+          )}
+          <p className={cn(
+            "mb-2.5 whitespace-pre-wrap break-words text-[1rem] leading-relaxed",
+            isHidden ? "text-muted" : "text-ink"
+          )}>
+            {post.body}
+          </p>
+        </>
+      )}
 
       {!isHidden && (
         <footer className="flex flex-wrap gap-0.5 border-t border-line pt-2">
