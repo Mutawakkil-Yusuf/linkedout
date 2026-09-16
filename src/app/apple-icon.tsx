@@ -19,20 +19,29 @@ export default function AppleIcon() {
           background: "#fdf8f3",
         }}
       >
-        <svg width="180" height="180" viewBox="0 0 100 100">
-          <rect x="6" y="6" width="88" height="88" rx="26" fill="#e8571f" />
-          <text
-            x="50"
-            y="63"
-            textAnchor="middle"
-            fontWeight="700"
-            fontSize="52"
-            letterSpacing="-0.05em"
-            fill="#fdf8f3"
+        <div
+          style={{
+            width: "88%",
+            height: "88%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#e8571f",
+            borderRadius: "26%",
+          }}
+        >
+          <span
+            style={{
+              fontSize: 94,
+              fontWeight: 700,
+              letterSpacing: "-0.05em",
+              color: "#fdf8f3",
+              lineHeight: 1,
+            }}
           >
             out
-          </text>
-        </svg>
+          </span>
+        </div>
       </div>
     ),
     size

@@ -18,20 +18,29 @@ export async function GET() {
           background: "#fdf8f3",
         }}
       >
-        <svg width="512" height="512" viewBox="0 0 100 100">
-          <rect x="4" y="4" width="92" height="92" rx="22" fill="#e8571f" />
-          <text
-            x="50"
-            y="63"
-            textAnchor="middle"
-            fontWeight="700"
-            fontSize="52"
-            letterSpacing="-0.05em"
-            fill="#fdf8f3"
+        <div
+          style={{
+            width: "92%",
+            height: "92%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#e8571f",
+            borderRadius: "22%",
+          }}
+        >
+          <span
+            style={{
+              fontSize: 266,
+              fontWeight: 700,
+              letterSpacing: "-0.05em",
+              color: "#fdf8f3",
+              lineHeight: 1,
+            }}
           >
             out
-          </text>
-        </svg>
+          </span>
+        </div>
       </div>
     ),
     { width: 512, height: 512 }
