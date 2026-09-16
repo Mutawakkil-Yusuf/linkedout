@@ -25,3 +25,9 @@ export function fmtDate(iso: string) {
     month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
   });
 }
+
+export function fmtMonthYear(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short", year: "numeric",
+  });
+}

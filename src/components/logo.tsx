@@ -5,22 +5,31 @@ import { cn } from "@/lib/utils";
 
 type MarkProps = { size?: number; className?: string; variant?: "gradient" | "flat" | "paper" };
 
+/**
+ * The mark: "out" set in a rounded square. Same move as LinkedIn's "in" —
+ * a lowercase word in an app-icon shape, in our flame, at our weight.
+ * Centering is math, not vibes: font-size 52, baseline at y=63 (the
+ * x-height band's visual center for Bricolage Grotesque), letter-spacing
+ * -0.05em. One SVG that scales from 14px to 512px.
+ */
 export function LogoMark({ size = 40, variant = "gradient", className }: MarkProps) {
-  const id = `lo-${Math.random().toString(36).slice(2, 8)}`;
-  const fill = variant === "gradient" ? `url(#${id}-g)` : variant === "paper" ? "#fdf8f3" : "#e8571f";
+  const bg = variant === "paper" ? "#fdf8f3" : "#e8571f";
+  const fg = variant === "paper" ? "#e8571f" : "#fdf8f3";
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" className={cn("flex-none", className)} aria-hidden="true">
-      <defs>
-        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ff7a3d" />
-          <stop offset="100%" stopColor="#c94410" />
-        </linearGradient>
-        <mask id={`${id}-m`} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-          <rect width="100" height="100" fill="#fff" />
-          <rect x="71" y="42" width="40" height="16" rx="8" fill="#000" />
-        </mask>
-      </defs>
-      <rect width="100" height="100" rx="30" fill={fill} mask={`url(#${id}-m)`} />
+      <rect width="100" height="100" rx="22" fill={bg} />
+      <text
+        x="50"
+        y="63"
+        textAnchor="middle"
+        fontFamily="var(--font-display), ui-sans-serif, system-ui, sans-serif"
+        fontWeight="700"
+        fontSize="52"
+        letterSpacing="-0.05em"
+        fill={fg}
+      >
+        out
+      </text>
     </svg>
   );
 }
@@ -41,4 +50,12 @@ export function Lockup({ size = 32, wordmarkSize = "md" }: { size?: number; word
       <Wordmark size={wordmarkSize} />
     </span>
   );
+}
+
+/**
+ * Short form. Just the mark, no wordmark — for spots where "LinkedOut"
+ * is too long: social avatars, stickers, tight corners.
+ */
+export function ShortMark({ size = 32, className, variant }: MarkProps) {
+  return <LogoMark size={size} variant={variant} className={className} />;
 }

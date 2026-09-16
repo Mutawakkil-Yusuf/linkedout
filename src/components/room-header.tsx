@@ -6,13 +6,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Trash2, UserPlus, Users } from "lucide-react";
+import { LogOut, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ActionButton } from "@/components/ui/action-button";
 import { InviteDialog } from "@/components/invite-dialog";
 import { leaveRoom, deleteRoom } from "@/lib/actions/rooms";
 import { useToast } from "@/components/toast-provider";
-import { fmtDate } from "@/lib/utils";
+import { fmtMonthYear } from "@/lib/utils";
 
 type Room = {
   id: string;
@@ -76,27 +76,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
           aria-hidden
         />
 
-        <div className="mb-1 flex flex-wrap items-baseline gap-x-3">
-          <h1 className="break-words font-display text-[1.75rem] font-bold leading-[1.08] tracking-[-0.03em]">
-            <span
-              className="mr-0.5 font-mono text-[1.35rem] font-medium"
-              style={{ color: "var(--room-accent)" }}
-            >
-              #
-            </span>
-            {room.slug}
-          </h1>
-          <span className="inline-flex items-center gap-1.5 font-mono text-[0.78rem] text-muted">
-            <Users className="h-3.5 w-3.5" strokeWidth={2} />
-            {memberCount} {memberCount === 1 ? "member" : "members"}
-          </span>
-        </div>
-
-        {room.name && (
-          <p className="mb-2.5 max-w-[38rem] text-[0.95rem] text-ink-2">{room.name}</p>
-        )}
-
-        <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[0.68rem] text-muted">
+        <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[0.68rem] uppercase tracking-[0.1em] text-muted">
           <span className="inline-flex items-center gap-1.5">
             <span
               className="inline-block h-1.5 w-1.5 rounded-full"
@@ -106,22 +86,23 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
             {VISIBILITY_LABEL[room.visibility] ?? room.visibility}
           </span>
           <span aria-hidden className="text-line-2">·</span>
-          <span>opened {fmtDate(room.created_at)}</span>
-          {isMember && joinedAt && (
-            <>
-              <span aria-hidden className="text-line-2">·</span>
-              <span>joined {fmtDate(joinedAt)}</span>
-            </>
-          )}
-          {isOwner && (
-            <>
-              <span aria-hidden className="text-line-2">·</span>
-              <span className="font-medium" style={{ color: "var(--room-accent)" }}>
-                you own this room
-              </span>
-            </>
-          )}
+          <span>{memberCount} {memberCount === 1 ? "member" : "members"}</span>
+          <span className="ml-2">created {fmtMonthYear(room.created_at)}</span>
         </div>
+
+        <h1 className="mb-1 break-words font-display text-[1.75rem] font-bold leading-[1.08] tracking-[-0.03em]">
+          <span
+            className="mr-0.5 font-mono text-[1.35rem] font-medium"
+            style={{ color: "var(--room-accent)" }}
+          >
+            #
+          </span>
+          {room.slug}
+        </h1>
+
+        {room.name && (
+          <p className="mb-4 max-w-[38rem] text-[0.95rem] text-ink-2">{room.name}</p>
+        )}
 
         <div className="flex flex-wrap items-center gap-2">
           {isMember && (
@@ -130,7 +111,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
                 variant="ghost"
                 size="sm"
                 onClick={() => setInviteOpen(true)}
-                className="gap-1.5"
+                className="gap-1.5 rounded-full uppercase tracking-[0.06em]"
               >
                 <UserPlus className="h-3.5 w-3.5" strokeWidth={2.25} />
                 Invite
@@ -139,7 +120,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
                 variant="quiet"
                 size="sm"
                 onClick={() => setConfirmingLeave(true)}
-                className="gap-1.5"
+                className="gap-1.5 rounded-full border border-line-2 uppercase tracking-[0.06em]"
               >
                 <LogOut className="h-3.5 w-3.5" strokeWidth={2.25} />
                 Leave
@@ -149,7 +130,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
                   variant="danger"
                   size="sm"
                   onClick={() => setConfirmingDelete(true)}
-                  className="gap-1.5"
+                  className="gap-1.5 rounded-full uppercase tracking-[0.06em]"
                 >
                   <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                   Delete

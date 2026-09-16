@@ -20,11 +20,18 @@ export default function AppleIcon() {
         }}
       >
         <svg width="180" height="180" viewBox="0 0 100 100">
-          <mask id="m">
-            <rect x="6" y="6" width="88" height="88" rx="26" fill="#fff" />
-            <rect x="68" y="38" width="42" height="24" rx="12" fill="#000" />
-          </mask>
-          <rect x="6" y="6" width="88" height="88" rx="26" fill="#e8571f" mask="url(#m)" />
+          <rect x="6" y="6" width="88" height="88" rx="26" fill="#e8571f" />
+          <text
+            x="50"
+            y="63"
+            textAnchor="middle"
+            fontWeight="700"
+            fontSize="52"
+            letterSpacing="-0.05em"
+            fill="#fdf8f3"
+          >
+            out
+          </text>
         </svg>
       </div>
     ),

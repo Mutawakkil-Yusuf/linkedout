@@ -72,7 +72,7 @@ export function Topbar() {
           })}
         </nav>
         <div className="mt-auto flex items-center gap-2 px-2 pt-4 text-[0.72rem] text-muted">
-          <LogoMark size={14} variant="flat" />
+          <LogoMark size={16} variant="flat" />
           <span className="font-mono">linkedout</span>
         </div>
       </aside>

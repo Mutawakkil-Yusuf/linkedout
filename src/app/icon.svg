@@ -1,8 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="LinkedOut">
   <title>LinkedOut</title>
-  <mask id="lo-fav" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-    <rect x="4" y="4" width="92" height="92" rx="22" fill="#fff"/>
-    <rect x="70" y="38" width="40" height="24" rx="12" fill="#000"/>
-  </mask>
-  <rect x="4" y="4" width="92" height="92" rx="22" fill="#e8571f" mask="url(#lo-fav)"/>
+  <rect width="100" height="100" rx="22" fill="#e8571f"/>
+  <text
+    x="50"
+    y="63"
+    text-anchor="middle"
+    font-family="Bricolage Grotesque, ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-weight="700"
+    font-size="52"
+    letter-spacing="-0.05em"
+    fill="#fdf8f3"
+  >out</text>
 </svg>

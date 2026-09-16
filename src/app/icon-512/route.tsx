@@ -19,11 +19,18 @@ export async function GET() {
         }}
       >
         <svg width="512" height="512" viewBox="0 0 100 100">
-          <mask id="m">
-            <rect x="4" y="4" width="92" height="92" rx="22" fill="#fff" />
-            <rect x="70" y="38" width="40" height="24" rx="12" fill="#000" />
-          </mask>
-          <rect x="4" y="4" width="92" height="92" rx="22" fill="#e8571f" mask="url(#m)" />
+          <rect x="4" y="4" width="92" height="92" rx="22" fill="#e8571f" />
+          <text
+            x="50"
+            y="63"
+            textAnchor="middle"
+            fontWeight="700"
+            fontSize="52"
+            letterSpacing="-0.05em"
+            fill="#fdf8f3"
+          >
+            out
+          </text>
         </svg>
       </div>
     ),

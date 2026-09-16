@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Mutawakkil Yusuf
 
-import { useId } from "react";
-
 type Phase = "drawing" | "breathing" | "static";
 
 export function MarkLoader({
@@ -16,9 +14,6 @@ export function MarkLoader({
   phase?: Phase;
   caption?: string;
 }) {
-  const raw = useId();
-  const gid = `lo-g-${raw.replace(/:/g, "")}`;
-
   const wrapClass =
     phase === "drawing" ? "animate-lo-pop" :
     phase === "breathing" ? "animate-lo-breathe" :
@@ -32,28 +27,21 @@ export function MarkLoader({
         aria-hidden="true"
       >
         <svg viewBox="0 0 100 100" width={size} height={size}>
-          <defs>
-            <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#ff7a3d" />
-              <stop offset="100%" stopColor="#c94410" />
-            </linearGradient>
-          </defs>
-          <rect width="100" height="100" rx="30" fill={`url(#${gid})`} />
+          <rect width="100" height="100" rx="22" fill="#e8571f" />
+          <text
+            className={phase === "drawing" ? "animate-lo-mark-text" : ""}
+            x="50"
+            y="63"
+            textAnchor="middle"
+            fontFamily="var(--font-display), ui-sans-serif, system-ui, sans-serif"
+            fontWeight="700"
+            fontSize="52"
+            letterSpacing="-0.05em"
+            fill="#fdf8f3"
+          >
+            out
+          </text>
         </svg>
-
-        <span
-          className={phase === "drawing" ? "animate-lo-slot-draw" : ""}
-          style={{
-            position: "absolute",
-            top: "42%",
-            height: "16%",
-            right: "-11%",
-            width: phase === "drawing" ? "0%" : "40%",
-            maxWidth: 60,
-            background: "#fdf8f3",
-            borderRadius: "999px",
-          }}
-        />
       </div>
 
       {caption && (
