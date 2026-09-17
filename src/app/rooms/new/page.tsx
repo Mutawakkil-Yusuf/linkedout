@@ -52,7 +52,7 @@ export default function NewRoomPage() {
 
   return (
     <div className="pt-8">
-      <h1 className="mb-6 font-display text-[1.6rem] font-bold tracking-[-0.025em]">New room</h1>
+      <h1 className="mb-6 font-display text-[1.6rem] font-bold tracking-[-0.025em]">Open a room</h1>
       <form onSubmit={onSubmit} className="space-y-5">
         <div>
           <label className="mb-1.5 block font-mono text-[0.72rem] uppercase tracking-wider text-muted">slug</label>

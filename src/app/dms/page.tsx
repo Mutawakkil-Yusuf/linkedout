@@ -59,7 +59,7 @@ export default function DmsPage() {
         </div>
       ) : rows.length === 0 ? (
         <div className="rounded-card border border-line bg-card p-8 text-center">
-          <p className="text-[0.95rem] text-muted">No conversations yet.</p>
+          <p className="text-[0.95rem] text-muted">Quiet in here. Say something to someone.</p>
           <p className="mt-1 text-[0.85rem] text-line-2">
             You can message anyone you share a room with.
           </p>

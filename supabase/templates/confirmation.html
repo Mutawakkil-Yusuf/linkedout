@@ -30,13 +30,29 @@
             <tr>
               <td style="padding:14px 32px 0 32px;">
                 <p style="margin:0; font-size:15px; line-height:1.6; color:#4a3f38;">
-                  No profile to fill in yet — just this. Confirm your email and you're in. Pick a handle next.
+                  Enter this code in the app to confirm you're a person. No profile to fill in yet — just this. Pick a handle next.
                 </p>
               </td>
             </tr>
 
             <tr>
-              <td style="padding:28px 32px 0 32px;">
+              <td style="padding:24px 32px 0 32px;">
+                <div style="background-color:#fdf3ea; border:1px solid #efe4d6; border-radius:12px; padding:18px 24px; text-align:center;">
+                  <span style="font-family:ui-monospace,Menlo,monospace; font-size:32px; font-weight:700; letter-spacing:0.3em; color:#1c1613;">{{ .Token }}</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:24px 32px 0 32px;">
+                <p style="margin:0; font-size:13px; line-height:1.6; color:#8a7a6d;">
+                  On this device already? Tap the button instead:
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:10px 32px 0 32px;">
                 <a href="{{ .ConfirmationURL }}" style="display:inline-block; background-color:#e8571f; color:#ffffff; font-size:15px; font-weight:600; text-decoration:none; padding:12px 24px; border-radius:999px;">
                   Confirm email →
                 </a>
@@ -46,10 +62,7 @@
             <tr>
               <td style="padding:24px 32px 0 32px;">
                 <p style="margin:0; font-size:13px; line-height:1.6; color:#8a7a6d;">
-                  Button not working? Paste this into your browser:
-                </p>
-                <p style="margin:6px 0 0 0; font-size:12px; line-height:1.6; word-break:break-all;">
-                  <a href="{{ .ConfirmationURL }}" style="color:#c94410;">{{ .ConfirmationURL }}</a>
+                  Didn't get a code? Request a new one from the sign-in screen.
                 </p>
               </td>
             </tr>
@@ -57,7 +70,7 @@
             <tr>
               <td style="padding:28px 32px 32px 32px; border-top:1px solid #efe4d6; margin-top:28px;">
                 <p style="margin:20px 0 0 0; font-size:12px; line-height:1.6; color:#8a7a6d;">
-                  Didn't try to sign up? Ignore this — no account is created until the link is used.
+                  Didn't try to sign up? Ignore this — no account is created until this code is used.
                 </p>
                 <p style="margin:16px 0 0 0; font-family:ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:0.04em; color:#8a7a6d;">
                   LinkedOut · You are not inventory.

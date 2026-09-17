@@ -63,7 +63,7 @@ export default async function Landing() {
           </span>{" "}be found by employers.
         </h1>
         <p className="mb-10 max-w-[34rem] text-[1.125rem] leading-relaxed text-ink-2">
-          No résumé. No recruiter search. No follower counts. Just people, rooms, and things worth saying. Pseudonymous by default.
+          No résumé. No recruiter search. No follower counts. Just people, rooms, and things worth saying. Use a fake name — nobody checks.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/login" className="inline-flex items-center justify-center rounded-full bg-flame px-6 py-3 text-[0.95rem] font-semibold text-white transition hover:bg-flame-deep">Get a handle →</Link>
@@ -75,7 +75,7 @@ export default async function Landing() {
           <div><p className="mb-4 font-mono text-[0.72rem] uppercase tracking-[0.15em] text-flame-deep">What LinkedIn is</p>
             <p className="text-[1.02rem] leading-relaxed text-ink-2">A labor market database with a feed on top. You are the inventory, searchable and contactable by whoever pays.</p></div>
           <div><p className="mb-4 font-mono text-[0.72rem] uppercase tracking-[0.15em] text-flame-deep">What LinkedOut is</p>
-            <p className="text-[1.02rem] leading-relaxed text-ink-2">The opposite. Rooms instead of connections. Chronological instead of ranked. Pseudonymous by default. Not searchable by employers. Ever.</p></div>
+            <p className="text-[1.02rem] leading-relaxed text-ink-2">The opposite. Rooms instead of connections. Newest first, no algorithm deciding what you see. Fake names welcome. Not searchable by employers. Ever.</p></div>
           <div><p className="mb-4 font-mono text-[0.72rem] uppercase tracking-[0.15em] text-flame-deep">What "trust us" is</p>
             <p className="text-[1.02rem] leading-relaxed text-ink-2">Every social network says it protects you. You can't check. Here, you don't have to take our word for it — read it, fork it, run your own.</p></div>
         </div>

@@ -144,7 +144,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
               Recent posts
             </h2>
             <span className="font-mono text-[0.7rem] text-muted">
-              chronological{postCountToday ? ` · ${postCountToday} today` : ""}
+              newest first{postCountToday ? ` · ${postCountToday} today` : ""}
             </span>
           </div>
 

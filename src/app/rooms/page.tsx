@@ -110,7 +110,7 @@ export default async function RoomsPage() {
           className="inline-flex flex-none items-center gap-2 rounded-full bg-flame px-4 py-2.5 text-[0.85rem] font-semibold text-white transition hover:bg-flame-deep"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-          New room
+          Open a room
         </Link>
       </header>
 
