@@ -317,7 +317,7 @@ export async function kickMember(input: z.infer<typeof kickSchema>): Promise<Res
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Not signed in" };
-  if (parsed.data.userId === user.id) return { ok: false, error: "You can't kick yourself — use leave room instead" };
+  if (parsed.data.userId === user.id) return { ok: false, error: "You can't kick yourself. Use leave room instead" };
 
   const { data: isMod } = await supabase.rpc("is_room_mod", { p_room: parsed.data.roomId, p_user: user.id });
   if (!isMod) return { ok: false, error: "Not a moderator" };
@@ -344,7 +344,7 @@ export async function kickMember(input: z.infer<typeof kickSchema>): Promise<Res
   const slug = await slugFor(supabase, parsed.data.roomId);
 
   await notifyTarget(supabase, user.id, parsed.data.userId,
-    `You were removed from #${slug ?? "a room"} by a moderator.\n\nReason: ${parsed.data.reason}\n\nYou're welcome to rejoin — this isn't a ban.`);
+    `You were removed from #${slug ?? "a room"} by a moderator.\n\nReason: ${parsed.data.reason}\n\nYou're welcome to rejoin. This isn't a ban.`);
 
   revalidateRoom(slug);
   if (slug) revalidatePath(`/rooms/${slug}/mod/members`);

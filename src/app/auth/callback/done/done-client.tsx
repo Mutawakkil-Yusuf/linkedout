@@ -36,7 +36,7 @@ export function CallbackDoneClient({ dest }: { dest: string }) {
 
   useEffect(() => {
     // This tab IS the installed app (or a plain desktop/mobile browser
-    // visit with no separate app to hand off to) — just continue.
+    // visit with no separate app to hand off to), so just continue.
     if (standalone === true) router.replace(dest);
   }, [standalone, dest, router]);
 
@@ -45,7 +45,7 @@ export function CallbackDoneClient({ dest }: { dest: string }) {
     // for this host via an intent:// URL. If LinkedOut is installed as a
     // TWA/standalone PWA that Chrome recognizes for this origin, this can
     // switch straight to it. If nothing catches it, the browser just stays
-    // put — free to try, no downside — and the manual instructions below
+    // put (free to try, no downside), and the manual instructions below
     // remain the fallback. No iOS equivalent exists (Apple doesn't expose
     // this to installed home-screen PWAs).
     if (standalone !== false || platform !== "android") return;
@@ -56,7 +56,7 @@ export function CallbackDoneClient({ dest }: { dest: string }) {
     try {
       window.location.href = intentUrl;
     } catch {
-      // ignore — manual fallback UI covers this
+      // ignore, the manual fallback UI covers this
     }
   }, [standalone, platform, dest]);
 
@@ -70,8 +70,8 @@ export function CallbackDoneClient({ dest }: { dest: string }) {
       <p className="mt-6 font-display text-[1.4rem] font-bold tracking-[-0.02em]">You're signed in</p>
       <p className="mt-2 max-w-[22rem] text-[0.95rem] leading-relaxed text-muted">
         {platform === "ios"
-          ? "Find LinkedOut on your home screen and tap it to continue — this browser tab was only needed to confirm the link."
-          : "Switch back to the LinkedOut app on your home screen to continue — this browser tab was only needed to confirm the link."}
+          ? "Find LinkedOut on your home screen and tap it. This tab was only here to confirm the code."
+          : "Switch back to the LinkedOut app on your home screen. This tab was only here to confirm the code."}
       </p>
       <a
         href={dest}

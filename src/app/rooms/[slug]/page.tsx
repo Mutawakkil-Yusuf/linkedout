@@ -63,7 +63,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
 
   if (!membership) {
     // Private rooms are invite-only from this point on (room_members_self_join
-    // in 0014_ownership_transfer.sql only permits public/unlisted) — a
+    // in 0014_ownership_transfer.sql only permits public/unlisted), so a
     // non-member landing here on a private room can't self-join at all.
     if (room.visibility === "private") {
       return (

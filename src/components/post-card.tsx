@@ -25,11 +25,11 @@ type Props = {
   author: Pick<Profile, "handle" | "display_name" | "avatar_style" | "avatar_seed"> | null;
   warmed?: boolean;
   currentUserId?: string | null;
-  /** total replies — shown to everyone, it's wayfinding not a vanity metric */
+  /** total replies: shown to everyone, it's wayfinding not a vanity metric */
   replyCount?: number;
-  /** total reactions — only ever rendered when the viewer is the post's author (see below) */
+  /** total reactions: only ever rendered when the viewer is the post's author (see below) */
   warmthCount?: number;
-  /** whether the viewer can moderate this room — gates the pin/unpin menu item */
+  /** whether the viewer can moderate this room: gates the pin/unpin menu item */
   isMod?: boolean;
   /** whether this post is the room's currently pinned post */
   isPinned?: boolean;
@@ -249,7 +249,7 @@ export function PostCard({
           >
             <Heart className={cn("h-4 w-4", warmed && "fill-current", pending && "animate-lo-breathe")} />
             {warmed ? "warmed" : "send warmth"}
-            {/* Only the author sees the total — everyone else only sees their
+            {/* Only the author sees the total. Everyone else only sees their
                 own warmed/not-warmed state. Matches the DB's own visibility
                 rule for reactions, and keeps this a private signal to the
                 author rather than a public like-count. */}

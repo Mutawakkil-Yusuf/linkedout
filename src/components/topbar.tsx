@@ -25,7 +25,7 @@ function isActive(pathname: string, href: string) {
 /**
  * Renders both the mobile top bar and the desktop sidebar from one nav
  * list, so they can never drift out of sync. Only one is visible at a
- * given viewport width — the other is `hidden` via Tailwind, not unmounted,
+ * given viewport width, the other is `hidden` via Tailwind, not unmounted,
  * so there's no layout flash while resizing.
  */
 export function Topbar() {
@@ -36,7 +36,7 @@ export function Topbar() {
     <>
       {/* Mobile / tablet: sticky bar. On small screens (below `sm`), the
           wordmark and nav tabs stack into two rows, both starting at the
-          same left edge — same padded container, no extra indent on the
+          same left edge, same padded container, no extra indent on the
           nav row. From `sm` up they sit back on one row as before. */}
       <header className="sticky top-0 z-20 border-b border-line bg-paper/85 backdrop-blur-md lg:hidden">
         <div className="mx-auto flex max-w-[40rem] flex-col gap-2 px-4 py-3 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-4 sm:px-5">

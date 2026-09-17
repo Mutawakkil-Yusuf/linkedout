@@ -40,7 +40,7 @@ export async function GET(
     headers: {
       "content-type": "image/svg+xml",
       // Seed + style + size fully determine the output, so this is safe to
-      // cache forever — both at the edge/CDN and in the browser.
+      // cache forever, both at the edge/CDN and in the browser.
       "cache-control": "public, max-age=31536000, immutable",
     },
   });

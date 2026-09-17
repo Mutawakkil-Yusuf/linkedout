@@ -30,7 +30,7 @@ export function PinnedNote({ postId, body, author }: Props) {
     try {
       sessionStorage.setItem(DISMISS_KEY(postId), "1");
     } catch {
-      // sessionStorage unavailable (private mode, etc) — dismissal just
+      // sessionStorage unavailable (private mode, etc), dismissal just
       // won't persist across reloads. Not worth surfacing to the user.
     }
   }

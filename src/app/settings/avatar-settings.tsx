@@ -22,7 +22,7 @@ export function AvatarSettingsForm({ initial }: { initial: AvatarChoice | null }
     setPending(true); setErr(null); setSaved(false);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setErr("You've been signed out — refresh and try again."); setPending(false); return; }
+    if (!user) { setErr("You've been signed out. Refresh and try again."); setPending(false); return; }
     const { error } = await supabase.from("profiles")
       .update({ avatar_style: choice.style, avatar_seed: choice.seed }).eq("id", user.id);
     setPending(false);

@@ -14,7 +14,7 @@ export function ReplyForm({ postId }: { postId: string }) {
   async function submit() {
     if (!body.trim()) return; setPending(true); const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast("You've been signed out — refresh and try again.", "error"); setPending(false); return; }
+    if (!user) { toast("You've been signed out. Refresh and try again.", "error"); setPending(false); return; }
     const { error } = await supabase.from("replies").insert({ post_id: postId, author_id: user.id, body: body.trim() });
     setPending(false);
     if (error) { toast(error.message, "error"); return; }

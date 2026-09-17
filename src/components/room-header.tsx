@@ -185,8 +185,8 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
             <p className="mb-5 text-[0.88rem] leading-relaxed text-muted">
               {isOwner
                 ? otherMembers > 0
-                  ? "You own this room. Ownership will automatically pass to whoever's been here longest — a mod first, or the earliest-joined member if there's no mod. Your past posts and replies stay as they are. You can rejoin any time, just not as owner."
-                  : "You're the only person here. Leaving will empty the room — it'll stay open with no owner until someone joins."
+                  ? "You own this room. Ownership will automatically pass to whoever's been here longest: a mod first, or the earliest-joined member if there's no mod. Your past posts and replies stay as they are. You can rejoin any time, just not as owner."
+                  : "You're the only person here. Leaving will empty the room. It'll stay open with no owner until someone joins."
                 : "You'll stop seeing posts from this room. Your past posts and replies here stay as they are. You can rejoin any time this room allows it."}
             </p>
             <div className="flex items-center justify-end gap-2">
@@ -222,8 +222,8 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
               Delete #{room.slug}?
             </h2>
             <p className="mb-4 text-[0.88rem] leading-relaxed text-muted">
-              This is permanent. Every post, reply, and membership in this room — for all{" "}
-              {memberCount} {memberCount === 1 ? "member" : "members"} — is deleted with it.
+              This is permanent. Every post, reply, and membership in this room, for all{" "}
+              {memberCount} {memberCount === 1 ? "member" : "members"}, is deleted with it.
               There's no undo.
             </p>
 

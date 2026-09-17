@@ -15,12 +15,12 @@ const ToastContext = createContext<((message: string, kind?: ToastKind) => void)
 
 /**
  * useToast()("Posted", "success")
- * useToast()("Couldn't send that — try again", "error")
+ * useToast()("Couldn't send that, try again", "error")
  *
  * Only two visual variants exist on purpose: error (paper/flame, matches the
  * existing inline `text-flame-deep` error convention used across every form
  * in the app) and everything else (a dark ink pill). There's no invented
- * "success green" — this app's palette is flame + neutrals, full stop, and
+ * "success green" (this app's palette is flame + neutrals, full stop), and
  * a toast system is not the place to add a third color family.
  */
 export function useToast() {

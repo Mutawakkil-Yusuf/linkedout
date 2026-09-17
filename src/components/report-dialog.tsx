@@ -39,7 +39,7 @@ export function ReportDialog({ open, onClose, targetType, targetId, roomId }: Pr
       note: note.trim() || undefined,
     });
     if (!res.ok) { toast(res.error, "error"); throw new Error(res.error); }
-    toast("Reported — mods will take it from here.", "success");
+    toast("Reported. Mods will take it from here.", "success");
     onClose();
   }
 

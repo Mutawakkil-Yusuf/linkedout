@@ -53,17 +53,17 @@ export default async function Landing() {
       </header>
       <section className="pt-20 pb-16">
         <div className="mb-6 inline-flex items-center gap-2 rounded-[10px] bg-flame/10 px-3 py-1.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.1em] text-flame-deep">
-          You’re not for sale
+          an open source project
         </div>
         <h1 className="mb-6 font-display text-[2.15rem] font-bold leading-[1.08] tracking-[-0.03em] sm:text-[2.6rem] sm:leading-[1.04] lg:text-[3.15rem] lg:leading-[1.02] lg:tracking-[-0.04em]">
-          A social place where you <span className="relative inline-block text-flame">can’t
+          LinkedIn, but built <span className="relative inline-block text-flame">backwards
             <svg viewBox="0 0 200 14" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-[0.35em] w-full" aria-hidden="true">
               <path d="M4 9 Q 40 3, 80 7 T 150 5 T 196 8" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
             </svg>
-          </span>{" "}be found by employers.
+          </span>{" "}on purpose.
         </h1>
         <p className="mb-10 max-w-[34rem] text-[1.125rem] leading-relaxed text-ink-2">
-          No résumé. No recruiter search. No follower counts. Just people, rooms, and things worth saying. Use a fake name — nobody checks.
+          No résumé, no recruiter search, no follower count deciding who gets heard. Just rooms, a plain newest-first feed, and a fake name if you want one. Nobody checks.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/login" className="inline-flex items-center justify-center rounded-full bg-flame px-6 py-3 text-[0.95rem] font-semibold text-white transition hover:bg-flame-deep">Get a handle →</Link>
@@ -77,7 +77,7 @@ export default async function Landing() {
           <div><p className="mb-4 font-mono text-[0.72rem] uppercase tracking-[0.15em] text-flame-deep">What LinkedOut is</p>
             <p className="text-[1.02rem] leading-relaxed text-ink-2">The opposite. Rooms instead of connections. Newest first, no algorithm deciding what you see. Fake names welcome. Not searchable by employers. Ever.</p></div>
           <div><p className="mb-4 font-mono text-[0.72rem] uppercase tracking-[0.15em] text-flame-deep">What "trust us" is</p>
-            <p className="text-[1.02rem] leading-relaxed text-ink-2">Every social network says it protects you. You can't check. Here, you don't have to take our word for it — read it, fork it, run your own.</p></div>
+            <p className="text-[1.02rem] leading-relaxed text-ink-2">Every social network tells you it has your back. You have no way to check. Here you don't have to take my word for it. Read the code, fork it, run your own copy.</p></div>
         </div>
       </section>
       <section id="rooms" className="py-16">

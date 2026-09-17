@@ -8,7 +8,7 @@ import notionistsJson from "@dicebear/styles/notionists.json" with { type: "json
 import shadowsJson from "@dicebear/styles/shadows.json" with { type: "json" };
 import type { AvatarStyle } from "./avatar";
 
-// Style instances are safe to reuse across requests — build them once.
+// Style instances are safe to reuse across requests. Build them once.
 const STYLES: Record<AvatarStyle, Style> = {
   lorelei: new Style(loreleiJson as any),
   notionists: new Style(notionistsJson as any),

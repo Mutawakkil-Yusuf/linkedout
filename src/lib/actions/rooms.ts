@@ -54,7 +54,7 @@ export async function leaveRoom(input: z.infer<typeof leaveSchema>): Promise<Res
 
   if (error) return { ok: false, error: error.message };
 
-  // Owner just left — hand the room to whoever's been here longest
+  // Owner just left. Hand the room to whoever's been here longest
   // (mods first, then members, by join date). If no one's left, the
   // room simply has no owner until someone new joins.
   if (wasOwner) {
@@ -296,7 +296,7 @@ export async function unpinPost(input: z.infer<typeof pinSchema>): Promise<Resul
 }
 
 // ═══════════════════════════════════════════════════════════════
-// invites — send, accept, decline, revoke
+// invites: send, accept, decline, revoke
 // ═══════════════════════════════════════════════════════════════
 
 const sendInviteSchema = z.object({
@@ -322,7 +322,7 @@ export async function sendInvite(input: z.infer<typeof sendInviteSchema>): Promi
 
   if (error) {
     // Unique-violation on the "one pending invite" partial index reads as
-    // a generic constraint error from Postgres — translate it so the
+    // a generic constraint error from Postgres. Translate it so the
     // person gets a sentence, not a raw DB message.
     if (error.code === "23505") return { ok: false, error: "You've already invited this person." };
     return { ok: false, error: error.message };

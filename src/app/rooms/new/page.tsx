@@ -32,7 +32,7 @@ export default function NewRoomPage() {
 
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast("You've been signed out — refresh and try again.", "error"); setPending(false); return; }
+    if (!user) { toast("You've been signed out. Refresh and try again.", "error"); setPending(false); return; }
 
     const { data: room, error: rErr } = await supabase
       .from("rooms")

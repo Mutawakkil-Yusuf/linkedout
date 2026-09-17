@@ -140,7 +140,7 @@ export function ActionButton({
       {variant === "fill"  && <span className="lo-btn-fill-el" aria-hidden="true" />}
       {variant === "arrow" && <span className="lo-btn-slot-el" aria-hidden="true" />}
 
-      {/* label stack — three labels, one grid cell */}
+      {/* label stack: three labels, one grid cell */}
       <span className="lo-btn-label-stack">
         <span data-show={showBase}>
           {icon && <span className="lo-btn-icon" aria-hidden="true">{icon}</span>}

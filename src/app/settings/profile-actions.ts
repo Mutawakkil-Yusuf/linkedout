@@ -18,7 +18,7 @@ const schema = z.object({
 export async function updateProfile(formData: FormData): Promise<Result> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "You've been signed out — refresh and try again." };
+  if (!user) return { ok: false, error: "You've been signed out. Refresh and try again." };
 
   const parsed = schema.safeParse({
     display_name: String(formData.get("display_name") || "").trim() || undefined,
@@ -26,7 +26,7 @@ export async function updateProfile(formData: FormData): Promise<Result> {
     now: String(formData.get("now") || "").trim() || undefined,
   });
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "That didn't look right — try again." };
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "That didn't look right. Try again." };
   }
 
   const { data: profile } = await supabase.from("profiles").select("handle").eq("id", user.id).maybeSingle();

@@ -77,7 +77,7 @@ export function TransferOwnershipDialog({
         </label>
         {candidates.length === 0 ? (
           <p className="mb-4 rounded-soft border border-line bg-paper-2 px-3 py-3 text-[0.85rem] text-muted">
-            No eligible members yet — invite someone or wait for the room to grow.
+            No eligible members yet. Invite someone or wait for the room to grow.
           </p>
         ) : (
           <div className="mb-4 max-h-56 overflow-y-auto rounded-soft border border-line">

@@ -25,7 +25,7 @@ export async function createProfile(formData: FormData) {
     bio: String(formData.get("bio") || "").trim() || undefined,
     now: String(formData.get("now") || "").trim() || undefined,
   });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "That didn't look right — try again." };
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "That didn't look right. Try again." };
   if (RESERVED.has(parsed.data.handle)) return { error: "That handle is reserved." };
   const { error } = await supabase.from("profiles").insert({
     id: user.id, handle: parsed.data.handle,

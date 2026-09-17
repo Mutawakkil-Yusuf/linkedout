@@ -6,7 +6,7 @@
  * Used for the room hash, the pinned note, the composer focus ring,
  * and the warmed-post marker. Everything else stays ink/paper.
  *
- * Constrained on purpose — nothing neon, nothing off-brand.
+ * Constrained on purpose. Nothing neon, nothing off-brand.
  */
 
 import type { CSSProperties } from "react";

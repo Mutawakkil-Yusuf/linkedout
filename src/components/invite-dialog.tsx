@@ -38,8 +38,8 @@ export function InviteDialog({ open, onClose, roomId }: Props) {
       setSearching(true);
       const supabase = createClient();
       // RLS (profiles_shared_read) already restricts this to people who
-      // share a room, DM thread, or post context with the current user —
-      // this is not an open directory search, matching the app's
+      // share a room, DM thread, or post context with the current user.
+      // This is not an open directory search, matching the app's
       // no-stranger-contact design (see room_invites migration notes).
       const { data } = await supabase
         .from("profiles")
@@ -75,7 +75,7 @@ export function InviteDialog({ open, onClose, roomId }: Props) {
         </h2>
         <p className="mb-4 text-[0.88rem] leading-relaxed text-muted">
           You can invite people you already share a room, DM, or thread with.
-          There's no open directory — this isn't a way to reach strangers.
+          There's no open directory here. This isn't a way to reach strangers.
         </p>
 
         <div className="relative mb-3">

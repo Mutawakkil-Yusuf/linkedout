@@ -13,7 +13,7 @@ export default function NotFound() {
         Nothing's here.
       </h1>
       <p className="mb-10 max-w-[28rem] text-[1.05rem] leading-relaxed text-ink-2">
-        No room, post, or person at this address. It may have moved, been deleted, or never existed — the URL doesn't say which.
+        No room, post, or person at this address. It may have moved, been deleted, or never existed. The URL doesn't say which.
       </p>
       <div className="flex flex-wrap items-center gap-3">
         <Link href="/rooms" className="inline-flex items-center justify-center rounded-full bg-flame px-6 py-3 text-[0.95rem] font-semibold text-white transition hover:bg-flame-deep">

@@ -14,7 +14,7 @@ import { ActionButton } from "@/components/ui/action-button";
 // OTP code instead of a magic link on purpose: a clickable email link
 // goes through the sender's click-tracking redirect (e.g. Brevo rewrites
 // it to a sendibt2.com URL), which can drop the auth `code` param or
-// fail to forward correctly — and even when it works, the link always
+// fail to forward correctly. Even when it works, the link always
 // opens in the system browser, not an installed home-screen PWA, which
 // never sees the resulting session. A typed code has neither problem:
 // nothing to rewrite, nothing to hand off, session lands directly in

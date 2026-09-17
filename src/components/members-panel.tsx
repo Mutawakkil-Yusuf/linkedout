@@ -91,7 +91,7 @@ export function MembersPanel({
           </h2>
           <p className="mb-4 text-[0.88rem] leading-relaxed text-muted">
             You own this room. If you transfer ownership, you'll become a
-            moderator and the new owner will have full control — including
+            moderator and the new owner will have full control, including
             appointing mods and transferring ownership again.
           </p>
           <button
@@ -209,7 +209,7 @@ export function MembersPanel({
             </h2>
             <p className="mb-4 text-[0.88rem] text-muted">
               They'll be removed from #{roomSlug} and notified with your reason.
-              This isn't a ban — they can rejoin any time (if the room allows it).
+              This isn't a ban. They can rejoin any time, if the room allows it.
             </p>
 
             <label className="mb-1.5 block font-mono text-[0.72rem] uppercase tracking-wider text-muted">

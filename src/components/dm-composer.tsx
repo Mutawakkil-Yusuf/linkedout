@@ -36,7 +36,7 @@ export function DmComposer({ threadId, onSent }: Props) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setPending(false);
-      toast("You've been signed out — refresh and try again.", "error");
+      toast("You've been signed out. Refresh and try again.", "error");
       throw new Error("not signed in");
     }
 
@@ -48,7 +48,7 @@ export function DmComposer({ threadId, onSent }: Props) {
 
     setPending(false);
     if (error || !data) {
-      toast(error?.message ?? "Couldn't send that — try again.", "error");
+      toast(error?.message ?? "Couldn't send that. Try again.", "error");
       throw error ?? new Error("send failed");
     }
 

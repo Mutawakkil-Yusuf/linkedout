@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const dest = profile ? "/rooms" : "/onboard";
 
   // The magic link always opens in the system browser, not the
-  // installed standalone PWA — they're separate storage contexts, so
+  // installed standalone PWA. They're separate storage contexts, so
   // the session we just created here is invisible to the installed
   // app icon on the home screen. Redirecting straight to `dest` would
   // only sign in this throwaway browser tab; the person would then

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 type MarkProps = { size?: number; className?: string; variant?: "gradient" | "flat" | "paper" };
 
 /**
- * The mark: "out" set in a rounded square. Same move as LinkedIn's "in" —
+ * The mark: "out" set in a rounded square. Same move as LinkedIn's "in":
  * a lowercase word in an app-icon shape, in our flame, at our weight.
  * Centering is math, not vibes: font-size 52, baseline at y=63 (the
  * x-height band's visual center for Bricolage Grotesque), letter-spacing
@@ -53,7 +53,7 @@ export function Lockup({ size = 32, wordmarkSize = "md" }: { size?: number; word
 }
 
 /**
- * Short form. Just the mark, no wordmark — for spots where "LinkedOut"
+ * Short form. Just the mark, no wordmark: for spots where "LinkedOut"
  * is too long: social avatars, stickers, tight corners.
  */
 export function ShortMark({ size = 32, className, variant }: MarkProps) {

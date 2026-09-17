@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {/*
           Runs before hydration. On a repeat visit this session, it adds
-          .lo-skip-splash to <html> — the matching rule in globals.css hides
+          .lo-skip-splash to <html>. The matching rule in globals.css hides
           #lo-splash immediately, so there's no one-frame flash of the splash
           before SplashScreen's own effect has a chance to run.
         */}

@@ -49,8 +49,8 @@ export function DiscoverSection({ rooms, hasJoinedAllPublicRooms = false }: Prop
         <div className="rounded-soft border border-dashed border-line bg-card px-6 py-10 text-center">
           <p className="text-[0.92rem] text-muted">
             {hasJoinedAllPublicRooms
-              ? "You're already in every public room there is. Nothing new to discover right now — check back later, or open one yourself."
-              : "No public rooms yet. Rooms here are often private — you'll see them when someone invites you."}
+              ? "You're already in every public room there is. Nothing new to discover right now. Check back later, or open one yourself."
+              : "No public rooms yet. Rooms here are often private, so you'll see them when someone invites you."}
           </p>
         </div>
       ) : filtered.length === 0 ? (
