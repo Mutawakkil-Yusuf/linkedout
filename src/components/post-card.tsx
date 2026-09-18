@@ -5,13 +5,37 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Eye, EyeOff, Pin, PinOff } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Eye, EyeOff, Pin, PinOff, Share2 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { ReportDialog } from "@/components/report-dialog";
+import { useToast } from "@/components/toast-provider";
 import { createClient } from "@/lib/supabase/client";
 import { pinPost, unpinPost } from "@/lib/actions/rooms";
 import { cn, relativeTime } from "@/lib/utils";
 import type { Post, Profile } from "@/lib/types";
+
+/**
+ * Builds the /api/post-card URL from data already on screen. The route
+ * never looks the post up by id — see its own comment for why — so
+ * everything it needs to draw the card has to be passed here.
+ */
+function buildCardUrl(
+  post: Props["post"],
+  author: Props["author"],
+  roomName?: string | null,
+  roomAccent?: string | null
+) {
+  const qs = new URLSearchParams();
+  qs.set("handle", author?.handle ?? "unknown");
+  qs.set("body", post.body);
+  qs.set("date", relativeTime(post.created_at));
+  if (author?.display_name) qs.set("name", author.display_name);
+  if (author?.avatar_style) qs.set("style", author.avatar_style);
+  if (author?.avatar_seed) qs.set("seed", author.avatar_seed);
+  if (roomName) qs.set("room", roomName);
+  if (roomAccent) qs.set("accent", roomAccent);
+  return `/api/post-card?${qs.toString()}`;
+}
 
 type Mode = "normal" | "spoiler" | "quiet";
 
@@ -33,6 +57,9 @@ type Props = {
   isMod?: boolean;
   /** whether this post is the room's currently pinned post */
   isPinned?: boolean;
+  /** shown as a #tag on the shared card, if this post belongs to a room */
+  roomName?: string | null;
+  roomAccent?: string | null;
 };
 
 export function PostCard({
@@ -44,7 +71,10 @@ export function PostCard({
   warmthCount = 0,
   isMod = false,
   isPinned = false,
+  roomName = null,
+  roomAccent = null,
 }: Props) {
+  const toast = useToast();
   const [warmed, setWarmed] = useState(warm0);
   const [pending, setPending] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,6 +82,7 @@ export function PostCard({
   const [revealed, setRevealed] = useState(false);
   const [pinBusy, setPinBusy] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
 
   const isHidden = !!post.hidden_at;
   const isAuthor = currentUserId && post.author_id === currentUserId;
@@ -87,6 +118,41 @@ export function PostCard({
     const res = await fn({ roomId: post.room_id, postId: post.id });
     setPinBusy(false);
     if (!res.ok) setPinError(res.error);
+  }
+
+  async function shareCard() {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      const cardUrl = buildCardUrl(post, author, roomName, roomAccent);
+      const res = await fetch(cardUrl);
+      if (!res.ok) throw new Error("card render failed");
+      const blob = await res.blob();
+      const file = new File([blob], `${author?.handle ?? "post"}-linkedout.png`, { type: "image/png" });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "LinkedOut",
+          text: `@${author?.handle ?? "unknown"} on LinkedOut`,
+        });
+      } else {
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = objectUrl;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+        toast("Card saved. Share it anywhere.", "success");
+      }
+    } catch (err) {
+      // AbortError just means the user closed the native share sheet — not a failure.
+      if ((err as Error)?.name !== "AbortError") {
+        toast("Couldn't make the card. Try again.", "error");
+      }
+    } finally {
+      setSharing(false);
+    }
   }
 
   return (
@@ -267,6 +333,16 @@ export function PostCard({
               <span className="font-mono text-[0.75rem] text-muted">{replyCount}</span>
             )}
           </Link>
+          <button
+            type="button"
+            onClick={shareCard}
+            disabled={sharing}
+            aria-busy={sharing}
+            className="inline-flex items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[0.8rem] font-medium text-muted transition hover:bg-paper-2 hover:text-ink disabled:cursor-default disabled:opacity-60"
+          >
+            <Share2 className="h-4 w-4" />
+            {sharing ? "making card…" : "share"}
+          </button>
         </footer>
       )}
 

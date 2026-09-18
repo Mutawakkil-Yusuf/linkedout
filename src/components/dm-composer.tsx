@@ -67,7 +67,10 @@ export function DmComposer({ threadId, onSent }: Props) {
   const canSend = body.trim().length > 0 && !pending;
 
   return (
-    <div className="flex items-end gap-2.5">
+    <div
+      className="flex items-end gap-1.5 rounded-[1.75rem] border border-line bg-card py-1.5 pl-4 pr-1.5 transition focus-within:border-flame focus-within:ring-4 focus-within:ring-flame/10"
+      onClick={() => ta.current?.focus()}
+    >
       <textarea
         ref={ta}
         value={body}
@@ -76,8 +79,7 @@ export function DmComposer({ threadId, onSent }: Props) {
         rows={1}
         maxLength={5000}
         placeholder="Write a message…"
-        className="flex-1 resize-none rounded-2xl border border-line bg-card px-4 py-2.5 text-[0.95rem] leading-relaxed text-ink outline-none transition placeholder:text-muted focus:border-flame focus:ring-4 focus:ring-flame/10"
-        style={{ minHeight: "2.75rem" }}
+        className="max-h-[140px] flex-1 resize-none self-center bg-transparent py-1.5 text-[0.95rem] leading-relaxed text-ink outline-none placeholder:text-muted"
       />
       <ActionButton
         variant="slot"
