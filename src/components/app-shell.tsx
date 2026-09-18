@@ -25,7 +25,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="lg:flex">
       <div className="hidden lg:block lg:w-[15.5rem] lg:flex-none" aria-hidden="true" />
-      <main className="mx-auto max-w-[40rem] px-5 pb-24 lg:max-w-[44rem] lg:flex-1 lg:px-10 lg:pt-4">
+      <main className="mx-auto max-w-[40rem] px-5 pb-32 lg:max-w-[44rem] lg:flex-1 lg:px-10 lg:pb-24 lg:pt-4">
         {children}
       </main>
     </div>

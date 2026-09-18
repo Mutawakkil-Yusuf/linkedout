@@ -23,10 +23,11 @@ function isActive(pathname: string, href: string) {
 }
 
 /**
- * Renders both the mobile top bar and the desktop sidebar from one nav
- * list, so they can never drift out of sync. Only one is visible at a
- * given viewport width, the other is `hidden` via Tailwind, not unmounted,
- * so there's no layout flash while resizing.
+ * Desktop sidebar and mobile top bar share this component so the brand
+ * mark stays in one place. TABS only renders in the desktop sidebar now;
+ * on mobile, navigation lives in the bottom nav (components/mobile/nav.tsx),
+ * which mirrors this same list separately to avoid over-coupling a sidebar
+ * layout to a bottom-tab layout.
  */
 export function Topbar() {
   const pathname = usePathname();
@@ -34,23 +35,11 @@ export function Topbar() {
 
   return (
     <>
-      {/* Mobile / tablet: sticky bar. On small screens (below `sm`), the
-          wordmark and nav tabs stack into two rows, both starting at the
-          same left edge, same padded container, no extra indent on the
-          nav row. From `sm` up they sit back on one row as before. */}
-      <header className="sticky top-0 z-20 border-b border-line bg-paper/85 backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex max-w-[40rem] flex-col gap-2 px-4 py-3 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-4 sm:px-5">
-          <Link href="/rooms" className="flex flex-none items-center"><Wordmark size="sm" /></Link>
-          <nav className="flex flex-nowrap items-center gap-1 overflow-x-auto sm:ml-auto">
-            {TABS.map((t) => (
-              <Link key={t.href} href={t.href}
-                className={cn("flex-none whitespace-nowrap rounded-[10px] px-2.5 py-1.5 text-[0.85rem] font-medium transition-colors sm:px-3.5 sm:text-[0.875rem]",
-                  isActive(pathname, t.href) ? "bg-flame/10 text-flame" : "text-muted hover:bg-paper-2 hover:text-ink")}>
-                {t.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+      {/* Mobile / tablet: brand-only sticky bar. Navigation lives in the
+          bottom nav (components/mobile/nav.tsx) now, so this is just a
+          consistent place to see the wordmark and get back to /rooms. */}
+      <header className="sticky top-0 z-20 border-b border-line bg-paper/85 px-4 py-3 backdrop-blur-md sm:px-5 lg:hidden">
+        <Link href="/rooms" className="flex items-center"><Wordmark size="sm" /></Link>
       </header>
 
       {/* Desktop: fixed left rail */}

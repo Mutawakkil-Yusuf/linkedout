@@ -1,6 +1,6 @@
 # LinkedOut
 
-A pseudonymous social network built around people and rooms rather than résumés, recruiters, follower counts, and professional identity.
+A social network built around people and rooms rather than résumés, recruiters, follower counts, and professional identity. Use your real name or a fake one, nobody checks.
 
 ## Stack
 
@@ -33,11 +33,16 @@ Set `NEXT_PUBLIC_SITE_URL` to the matching origin.
 
 ### Email
 
-Auth emails (magic link, signup confirmation) are sent through custom SMTP —
+Auth emails (sign-in code, signup confirmation) are sent through custom SMTP,
 configured once in **Project Settings → Authentication → SMTP Settings** in
 the Supabase dashboard, not tracked in this repo since it holds credentials.
 
-Email *content* is tracked, though — `supabase/templates/` holds the actual
+Sign-in uses a 6-digit code sent by email, not a magic link. Email link
+click-tracking (Brevo and similar providers rewrite links before
+forwarding them) can silently break the auth `code` param, so the login
+flow never relies on the person clicking anything in the email.
+
+Email *content* is tracked, though. `supabase/templates/` holds the actual
 HTML, wired up in `supabase/config.toml`. To push template changes to the
 hosted project:
 
@@ -47,7 +52,7 @@ npx supabase config push
 
 The Supabase CLI's binary isn't available on every platform (notably
 Android/Termux). Where it isn't, use `scripts/push-email-templates.sh`
-instead — it pushes the same `supabase/templates/*.html` files via the
+instead. It pushes the same `supabase/templates/*.html` files via the
 Supabase Management API directly:
 
 ```bash
@@ -59,7 +64,7 @@ export SUPABASE_PROJECT_REF="your-ref"
 Requires `jq` (`pkg install jq` on Termux).
 
 Edit the `.html` files in `supabase/templates/`, not the dashboard's
-template editor — the dashboard editor gets overwritten on the next
+template editor. The dashboard editor gets overwritten on the next
 push, whichever method you use.
 
 ## Vercel
@@ -76,6 +81,9 @@ Before public launch, review the RLS policies and implement moderation/rate limi
 
 ## License
 
-AGPL-3.0-or-later — see [LICENSE](./LICENSE).
+AGPL-3.0-or-later. See [LICENSE](./LICENSE).
 
-Fork it, remix it, run your own instance — just keep it open. If you're hosting a modified version of LinkedOut for others to use, the AGPL asks you to share those changes too. That's the deal: freedom stays freedom, even on a server.
+You can fork it, modify it, and run your own instance. The one condition is
+that it has to stay open: if you host a modified version for other people
+to use, AGPL requires you to share those changes too. That's what keeps
+this honest long-term, even if someone spins up a competing instance.

@@ -6,6 +6,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import { Topbar } from "@/components/topbar";
 import { AppShell } from "@/components/app-shell";
+import { MobileNav } from "@/components/mobile/nav";
 import { SplashScreen } from "@/components/splash-screen";
 import { RegisterServiceWorker } from "@/components/register-service-worker";
 import { ToastProvider } from "@/components/toast-provider";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ToastProvider>
           <Topbar />
           <AppShell>{children}</AppShell>
+          <MobileNav />
         </ToastProvider>
       </body>
     </html>

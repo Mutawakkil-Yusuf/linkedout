@@ -114,6 +114,9 @@ export default async function Landing() {
           <span>AGPL-3.0</span><span className="text-line-2">·</span><span>self-hostable</span><span className="text-line-2">·</span><span>no ads</span><span className="text-line-2">·</span><span>no recruiter search</span>
         </div>
         <div className="flex items-center gap-4">
+          <Link href="/rooms/wall" className="inline-flex items-center gap-1.5 text-muted transition hover:text-ink">
+            browse rooms
+          </Link>
           <a
             href="https://github.com/Mutawakkil-Yusuf/linkedout"
             target="_blank"

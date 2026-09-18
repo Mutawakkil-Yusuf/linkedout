@@ -10,6 +10,7 @@ import { RoomSidebar } from "@/components/room-sidebar";
 import { Composer } from "@/components/composer";
 import { PostCard } from "@/components/post-card";
 import { JoinRoomButton } from "@/components/join-room-button";
+import { RoomComposerMobile } from "@/components/mobile/room-composer-mobile";
 
 export default async function RoomPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -83,7 +84,7 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
     );
   }
 
-  const [{ count: postCountToday }, { data: modRows }] = await Promise.all([
+  const [{ count: postCountToday }, { data: modRows }, { data: myProfile }] = await Promise.all([
     supabase
       .from("posts")
       .select("id", { count: "exact", head: true })
@@ -95,6 +96,11 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
       .select("user_id, role, profile:profiles!room_members_user_id_fkey(handle, display_name)")
       .eq("room_id", room.id)
       .in("role", ["owner", "mod"]),
+    supabase
+      .from("profiles")
+      .select("handle, avatar_style, avatar_seed")
+      .eq("id", user.id)
+      .maybeSingle(),
   ]);
 
   const [{ data: pinned }, { data: posts }] = await Promise.all([
@@ -137,7 +143,18 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_15rem] lg:gap-10">
         <div>
-          <Composer roomId={room.id} />
+          <div className="hidden lg:block">
+            <Composer roomId={room.id} />
+          </div>
+          {myProfile?.handle && (
+            <RoomComposerMobile
+              roomId={room.id}
+              roomSlug={room.slug}
+              handle={myProfile.handle}
+              avatarStyle={myProfile.avatar_style}
+              avatarSeed={myProfile.avatar_seed}
+            />
+          )}
 
           <div className="mb-4 flex items-baseline justify-between border-b border-line pb-3">
             <h2 className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-muted">

@@ -412,3 +412,34 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .lo-toast-pop { animation: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Mobile bottom sheet: composer / reply
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes lo-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes lo-sheet-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+@keyframes lo-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes lo-backdrop-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lo-sheet-pop,
+  .lo-backdrop-pop {
+    animation: none !important;
+  }
+}
