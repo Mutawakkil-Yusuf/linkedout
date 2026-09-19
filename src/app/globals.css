@@ -421,6 +421,68 @@ html, body {
 }
 
 /* ═══════════════════════════════════════════════════════
+   ROOM DISCOVERY — inline "join" button
+   Its own small, self-contained button (see the comment in
+   inline-join-button.tsx for why it isn't built on ActionButton):
+   picks up each room's own accent color via CSS custom properties
+   set inline per-instance, and borrows the same spring-bounce timing
+   the shared .lo-btn system uses so it still feels consistent with
+   every other tap in the app, without touching that shared CSS at all.
+   ═══════════════════════════════════════════════════════ */
+
+.lo-join-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.2rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--join-accent-border, #e8571f);
+  background: var(--join-accent-bg, rgba(232, 87, 31, 0.07));
+  color: var(--join-accent, #e8571f);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 150ms ease, transform 90ms ease, border-color 150ms ease;
+}
+.lo-join-btn:hover:not(:disabled) {
+  background: var(--join-accent, #e8571f);
+  color: #fdf8f3;
+}
+.lo-join-btn:active:not(:disabled) { transform: scale(0.93); }
+.lo-join-btn:disabled { cursor: default; }
+
+/* Same overshoot spring as .lo-btn[data-phase="idle"], scoped here to
+   fire when this button returns to idle (i.e. after an error resets
+   it) rather than on the pending → done transition, which gets its
+   own settle-in below instead. */
+.lo-join-btn[data-phase="idle"] {
+  animation: lo-btn-spring 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lo-join-btn[data-phase="pending"] {
+  background: var(--join-accent, #e8571f);
+  color: #fdf8f3;
+  border-color: transparent;
+  opacity: 0.85;
+}
+
+.lo-join-btn[data-phase="done"] {
+  background: #3f9a63;
+  border-color: transparent;
+  color: #ffffff;
+  animation: lo-btn-spring 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lo-join-btn { animation: none !important; transition-duration: 0.01ms !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
    LetterWord — Sway (arrival + idle bob)
    ═══════════════════════════════════════════════════════ */
 

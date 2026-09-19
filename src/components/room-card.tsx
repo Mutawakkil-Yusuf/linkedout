@@ -25,6 +25,14 @@ export type RoomListing = {
 export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJoin?: boolean }) {
   const accent = getAccent(room.accent);
   const isMember = !!room.my_role;
+  // Discovery cards (showJoin) aren't "yours" yet, so they get a
+  // lighter touch than a member card's full wash — but still enough
+  // color to read as alive on first paint, not just on hover. A
+  // first-time visitor on mobile never hovers at all, so gating all
+  // color behind :hover (the previous behavior) meant this page's
+  // entire primary surface rendered gray-on-gray for exactly the
+  // audience it's trying to pull in.
+  const showAccentAtRest = isMember || showJoin;
 
   return (
     <Link
@@ -33,12 +41,14 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
         "group relative block overflow-hidden rounded-soft border bg-card",
         "py-3.5 pl-5 pr-4 transition-all duration-200",
         "hover:-translate-y-[3px] hover:shadow-[0_10px_24px_-12px_var(--card-accent-shadow)]",
-        isMember ? "border-[var(--card-accent-border)]" : "border-line hover:border-[var(--card-accent-border)]"
+        showAccentAtRest ? "border-[var(--card-accent-border)]" : "border-line hover:border-[var(--card-accent-border)]"
       )}
       style={{
         background: isMember
           ? `linear-gradient(180deg, ${accent.bg} 0%, transparent 55%)`
-          : undefined,
+          : showJoin
+            ? `linear-gradient(180deg, ${accent.bg} 0%, transparent 75%)`
+            : undefined,
         ["--card-accent-shadow" as string]: accent.border,
         ["--card-accent-border" as string]: accent.border,
       }}
@@ -46,8 +56,8 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
       <span
         aria-hidden
         className={cn(
-          "absolute inset-y-0 left-0 w-[5px] rounded-r-full transition-all duration-200",
-          isMember ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          "absolute inset-y-0 left-0 rounded-r-full transition-all duration-200",
+          showAccentAtRest ? "w-[5px] opacity-100" : "w-[5px] opacity-0 group-hover:opacity-100"
         )}
         style={{ background: accent.fg }}
       />
@@ -61,7 +71,7 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
         </h3>
         {room.my_role && <RolePill role={room.my_role} accent={accent} />}
         {showJoin && (
-          <InlineJoinButton roomId={room.id} slug={room.slug} />
+          <InlineJoinButton roomId={room.id} slug={room.slug} accent={room.accent} />
         )}
       </div>
 
@@ -72,18 +82,27 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
       <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[0.7rem] text-muted">
         <span className="inline-flex items-center gap-1.5">
           <span aria-hidden className="inline-block h-[5px] w-[5px] rounded-full" style={{ background: accent.fg }} />
-          {room.member_count} {room.member_count === 1 ? "member" : "members"}
+          {room.member_count === 0 ? (
+            <span className="font-medium" style={{ color: accent.fg }}>
+              be the first here
+            </span>
+          ) : (
+            <>{room.member_count} {room.member_count === 1 ? "member" : "members"}</>
+          )}
         </span>
 
-        {room.posts_today > 0 ? (
+        {room.posts_today > 0 && (
           <span className="font-medium" style={{ color: accent.fg }}>
             {room.posts_today} {room.posts_today === 1 ? "post" : "posts"} today
           </span>
-        ) : (
-          <span>quiet today</span>
         )}
 
-        <span>{formatActivity(room.last_post_at)}</span>
+        {room.member_count > 0 && (
+          <>
+            {room.posts_today === 0 && <span>quiet today</span>}
+            <span>{formatActivity(room.last_post_at)}</span>
+          </>
+        )}
         <span className="capitalize">{room.visibility}</span>
       </div>
     </Link>
