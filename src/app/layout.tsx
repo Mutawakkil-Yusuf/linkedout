@@ -27,12 +27,16 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://linkedoutz.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "LinkedOut",
+    default: "LinkedOut — the network where you can't be found by employers",
     template: "%s · LinkedOut",
   },
-  description: "The network where you cannot be found by employers.",
+  description:
+    "Rooms to be a person, not a position. No résumé, no job title, no professional performance — just people.",
   applicationName: "LinkedOut",
   manifest: "/manifest.webmanifest",
   // No `icons` field here on purpose: app/icon.svg and app/apple-icon.tsx
@@ -44,14 +48,29 @@ export const metadata: Metadata = {
     title: "LinkedOut",
     statusBarStyle: "default",
   },
+  // Left unset here on purpose (not "index, follow"): the safe global
+  // default is to let Next.js apply no blanket rule, and instead have
+  // each page state its own indexability explicitly (see robots.ts for
+  // the crawl-level allow/disallow list, and individual page metadata
+  // for `robots: { index: false }` on anything gated). A page that
+  // forgets to opt in stays un-indexed by default, which is the safer
+  // failure mode for an app whose whole premise is not being findable.
   openGraph: {
     title: "LinkedOut",
     description: "The network where you cannot be found by employers.",
     siteName: "LinkedOut",
     type: "website",
+    url: siteUrl,
+    // No `images` field here: this file has no opengraph-image.tsx
+    // sibling, so Next.js falls through to the nearest one it finds
+    // walking up the route tree — which, for any route that doesn't
+    // define its own, is this layout's own opengraph-image.tsx.
+    // Listing a URL here too would just produce a second, redundant
+    // <meta property="og:image"> tag alongside the one Next already
+    // generates from that file.
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "LinkedOut",
     description: "The network where you cannot be found by employers.",
   },

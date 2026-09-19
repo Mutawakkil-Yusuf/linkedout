@@ -89,7 +89,22 @@ html, body {
 }
 .lo-btn-sm { padding: 0.5rem 1.15rem; font-size: 0.82rem; }
 .lo-btn-md { padding: 0.7rem 1.5rem;  font-size: 0.9rem; }
-.lo-btn.is-pressing { transform: scale(0.97); }
+.lo-btn.is-pressing { transform: scale(0.95); transition: transform 90ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.lo-btn:not(.is-pressing):not(:disabled):active { transform: scale(0.95); }
+
+/* Spring-back overshoot the instant a press ends. Scoped to is-pressing
+   transitioning to idle specifically (not loading/success/error) so it
+   can't collide with the slot/fill/stamp animations those states drive —
+   those already have their own carefully-timed motion, this just adds
+   the satisfying "give" right after a normal, quick tap. */
+.lo-btn[data-phase="idle"] {
+  animation: lo-btn-spring 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lo-btn-spring {
+  0%   { transform: scale(0.95); }
+  55%  { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
 
 .lo-btn-icon {
   display: inline-flex;
@@ -337,6 +352,72 @@ html, body {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
   }
+
+  .lo-warmth-burst { display: none !important; }
+  .lo-warmth-pop { animation: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SEND WARMTH — tap flourish
+   Purely decorative, one-shot, local only. No count is drawn
+   from or fed into this — see the comment at its call site.
+   ═══════════════════════════════════════════════════════ */
+
+.lo-warmth-pop {
+  animation: lo-warmth-heartpop 480ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lo-warmth-heartpop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.5) rotate(-8deg); }
+  60%  { transform: scale(0.92) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.lo-warmth-burst {
+  position: absolute;
+  left: 1.4rem;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.lo-warmth-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  color: #e8571f;
+  opacity: 0.7;
+  animation: lo-warmth-ring 550ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes lo-warmth-ring {
+  0%   { transform: scale(0.3); opacity: 0.7; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+.lo-warmth-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 999px;
+  background: #e8571f;
+  animation: lo-warmth-spark 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i) * 12ms);
+  transform: rotate(calc(var(--i) * 60deg)) translateX(0);
+  opacity: 0;
+}
+@keyframes lo-warmth-spark {
+  0%   { transform: rotate(calc(var(--i) * 60deg)) translateX(0)    scale(1);   opacity: 1; }
+  100% { transform: rotate(calc(var(--i) * 60deg)) translateX(15px) scale(0.4); opacity: 0; }
 }
 
 /* ═══════════════════════════════════════════════════════

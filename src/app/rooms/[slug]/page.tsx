@@ -2,6 +2,7 @@
 // Copyright (C) 2026 Mutawakkil Yusuf
 
 import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { roomVars } from "@/lib/room-theme";
 import { RoomHeader } from "@/components/room-header";
@@ -11,6 +12,34 @@ import { Composer } from "@/components/composer";
 import { PostCard } from "@/components/post-card";
 import { JoinRoomButton } from "@/components/join-room-button";
 import { RoomComposerMobile } from "@/components/mobile/room-composer-mobile";
+
+// Independent lookup from the page body below — see the same note in
+// join/[token]/page.tsx and u/[handle]/page.tsx. rooms_public_read
+// (0001_init.sql) means this actually succeeds for public rooms even
+// signed out, unlike the profile case, but the page itself still isn't
+// reachable by an anonymous crawler (middleware.ts only allowlists
+// /rooms/wall, not /rooms/[slug]), so indexing stays off here too —
+// the room's opengraph-image sibling route still renders a rich
+// preview for a direct share link regardless of this robots setting.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data: room } = await supabase.from("rooms").select("slug, name").eq("slug", slug).maybeSingle();
+
+  const title = room ? `#${room.slug}` : "Room";
+  const description = room?.name || "A room on LinkedOut.";
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false },
+    openGraph: { title, description },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
 
 export default async function RoomPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

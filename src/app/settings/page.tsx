@@ -3,9 +3,12 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { AvatarSettingsForm } from "./avatar-settings";
+
+export const metadata: Metadata = { title: "Settings", robots: { index: false, follow: false } };
 import { ProfileSettingsForm } from "./profile-settings";
 import { DeleteAccountSection } from "./delete-account-section";
 

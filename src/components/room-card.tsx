@@ -30,15 +30,23 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
     <Link
       href={`/rooms/${room.slug}`}
       className={cn(
-        "group relative block overflow-hidden rounded-soft border border-line bg-card",
-        "py-3.5 pl-5 pr-4 transition",
-        "hover:-translate-y-px hover:border-line-2"
+        "group relative block overflow-hidden rounded-soft border bg-card",
+        "py-3.5 pl-5 pr-4 transition-all duration-200",
+        "hover:-translate-y-[3px] hover:shadow-[0_10px_24px_-12px_var(--card-accent-shadow)]",
+        isMember ? "border-[var(--card-accent-border)]" : "border-line hover:border-[var(--card-accent-border)]"
       )}
+      style={{
+        background: isMember
+          ? `linear-gradient(180deg, ${accent.bg} 0%, transparent 55%)`
+          : undefined,
+        ["--card-accent-shadow" as string]: accent.border,
+        ["--card-accent-border" as string]: accent.border,
+      }}
     >
       <span
         aria-hidden
         className={cn(
-          "absolute inset-y-0 left-0 w-[3px] transition-opacity",
+          "absolute inset-y-0 left-0 w-[5px] rounded-r-full transition-all duration-200",
           isMember ? "opacity-100" : "opacity-0 group-hover:opacity-100"
         )}
         style={{ background: accent.fg }}
@@ -51,7 +59,7 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
         <h3 className="min-w-0 flex-1 font-display text-[1.1rem] font-bold tracking-[-0.015em] text-ink">
           {room.slug}
         </h3>
-        {room.my_role && <RolePill role={room.my_role} />}
+        {room.my_role && <RolePill role={room.my_role} accent={accent} />}
         {showJoin && (
           <InlineJoinButton roomId={room.id} slug={room.slug} />
         )}
@@ -82,17 +90,21 @@ export function RoomCard({ room, showJoin = false }: { room: RoomListing; showJo
   );
 }
 
-function RolePill({ role }: { role: "owner" | "mod" | "member" }) {
+function RolePill({ role, accent }: { role: "owner" | "mod" | "member"; accent: ReturnType<typeof getAccent> }) {
+  const label = role === "owner" ? "★ owner" : role === "mod" ? "mod" : "member";
   return (
     <span
       className={cn(
-        "rounded-full px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.1em]",
-        role === "owner" && "bg-ink text-paper",
-        role === "mod" && "bg-flame/10 text-flame",
+        "rounded-full px-2.5 py-0.5 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.08em]",
         role === "member" && "bg-paper-2 text-muted"
       )}
+      style={
+        role !== "member"
+          ? { background: accent.bg, color: accent.fg, boxShadow: `inset 0 0 0 1px ${accent.border}` }
+          : undefined
+      }
     >
-      {role}
+      {label}
     </span>
   );
 }

@@ -3,10 +3,50 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { roomVars } from "@/lib/room-theme";
 import { Lockup } from "@/components/logo";
 import { JoinLinkRedeemer } from "@/components/join-link-redeemer";
+
+// Its own query, independent of the page component below on purpose —
+// generateMetadata and the page body run as two separate invocations
+// in Next.js regardless (there's no shared-fetch shortcut between
+// them without extra machinery), so this stays a plain, self-contained
+// lookup rather than something threading state from the page function.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}): Promise<Metadata> {
+  const { token } = await params;
+  const supabase = await createClient();
+  const { data: link } = await supabase
+    .from("room_share_links")
+    .select("rooms:room_id (slug, name)")
+    .eq("token", token)
+    .maybeSingle<{ rooms: { slug: string; name: string } | null }>();
+
+  if (!link?.rooms) {
+    return { title: "Join a room", robots: { index: false } };
+  }
+
+  const title = `Join #${link.rooms.slug}`;
+  const description = link.rooms.name || "You've been invited to a room on LinkedOut.";
+  return {
+    title,
+    description,
+    // Indexing a single-use-feeling invite link isn't useful for search
+    // (nobody searches for a specific token), but the link still needs
+    // to render a rich preview when shared — robots and OG/Twitter
+    // cards are independent signals in Next's metadata API, so opting
+    // out of indexing here doesn't affect whether the opengraph-image
+    // sibling route in this same folder gets used for link previews.
+    robots: { index: false, follow: true },
+    openGraph: { title, description },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
 
 export default async function JoinLinkPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

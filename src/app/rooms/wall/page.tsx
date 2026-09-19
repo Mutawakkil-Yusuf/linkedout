@@ -2,14 +2,29 @@
 // Copyright (C) 2026 Mutawakkil Yusuf
 
 import Link from "next/link";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { RoomCard, type RoomListing } from "@/components/room-card";
 import { Lockup } from "@/components/logo";
 import { getAccent } from "@/lib/room-theme";
 
-export const metadata = {
-  title: "Rooms | LinkedOut",
+// The one genuinely public, crawlable, indexable page besides the
+// homepage — it's in both robots.ts's allow list and sitemap.ts, so
+// this is the one page in the app where `index: true` is the honest
+// answer rather than the safe default of leaving it off.
+export const metadata: Metadata = {
+  title: "Rooms",
   description: "Every public room on LinkedOut, live. No login needed to look.",
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Rooms · LinkedOut",
+    description: "Every public room on LinkedOut, live. No login needed to look.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rooms · LinkedOut",
+    description: "Every public room on LinkedOut, live. No login needed to look.",
+  },
 };
 
 // Public, no auth required (see the middleware allowlist). Reads only

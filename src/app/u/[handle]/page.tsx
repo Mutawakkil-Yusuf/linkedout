@@ -2,11 +2,50 @@
 // Copyright (C) 2026 Mutawakkil Yusuf
 
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/ui/avatar";
 import { PostCard } from "@/components/post-card";
 import { NowLine } from "@/components/now-line";
 import { MessageButton } from "@/components/message-button";
+
+// Independent lookup from the page body below, same reasoning as
+// join/[token]/page.tsx's generateMetadata. Because profiles have no
+// public RLS read policy (profiles_self_read / profiles_shared_read),
+// this query returns null for the common case — an anonymous
+// link-preview bot fetching someone's shared profile URL — and the
+// title falls back to just the handle already present in the URL
+// rather than claiming a display name or bio it was never allowed to
+// read. The route stays de-indexed either way: see the robots note
+// below for why.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ handle: string }>;
+}): Promise<Metadata> {
+  const { handle } = await params;
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("handle, display_name")
+    .eq("handle", handle)
+    .maybeSingle();
+
+  const title = profile?.display_name ? `${profile.display_name} (@${handle})` : `@${handle}`;
+  const description = `${title} on LinkedOut.`;
+  return {
+    title,
+    description,
+    // Profiles aren't reachable by an unauthenticated crawler anyway
+    // (middleware.ts redirects to /login before this page renders for
+    // anyone signed out), so there's nothing here for a search engine
+    // to actually index — this just states that explicitly rather than
+    // relying on the redirect alone to keep it out of search results.
+    robots: { index: false, follow: false },
+    openGraph: { title, description },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
 
 export default async function ProfilePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params; const supabase = await createClient();

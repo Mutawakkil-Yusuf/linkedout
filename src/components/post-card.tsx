@@ -77,6 +77,7 @@ export function PostCard({
   const toast = useToast();
   const [warmed, setWarmed] = useState(warm0);
   const [pending, setPending] = useState(false);
+  const [justWarmed, setJustWarmed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -104,6 +105,11 @@ export function PostCard({
     } else {
       await supabase.from("reactions").upsert({ post_id: post.id, user_id: user.id, kind: "ack" });
       setWarmed(true);
+      // Purely a local, one-shot visual flourish — nothing here is sent
+      // anywhere or persisted. It exists so a tap *feels* like it landed,
+      // without exposing anything resembling a growing public like count.
+      setJustWarmed(true);
+      window.setTimeout(() => setJustWarmed(false), 700);
     }
     setPending(false);
   }
@@ -158,15 +164,15 @@ export function PostCard({
   return (
     <article
       className={cn(
-        "relative mb-3 overflow-hidden rounded-card border bg-card px-4 pb-3 pt-4 transition-colors",
+        "relative mb-3 overflow-hidden rounded-card border bg-card px-4 pb-3 pt-4 transition-all duration-200",
         warmed
-          ? "border-flame/15 bg-gradient-to-b from-[#fffafb] to-card"
-          : "border-line hover:border-line-2"
+          ? "border-flame/15 bg-gradient-to-b from-[#fffafb] to-card shadow-[0_6px_18px_-10px_rgba(232,87,31,0.35)]"
+          : "border-line hover:-translate-y-px hover:border-line-2 hover:shadow-[0_8px_20px_-12px_rgba(28,22,19,0.16)]"
       )}
     >
       {warmed && !isHidden && (
         <span
-          className="absolute inset-y-0 left-0 w-[3px]"
+          className="absolute inset-y-0 left-0 w-[4px] rounded-r-full"
           style={{ background: "var(--room-accent, #e8571f)" }}
           aria-hidden
         />
@@ -307,13 +313,31 @@ export function PostCard({
             disabled={pending}
             aria-busy={pending}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[0.8rem] font-medium transition disabled:cursor-default",
+              "relative inline-flex items-center gap-1.5 overflow-visible rounded-[8px] px-2.5 py-1.5 text-[0.8rem] font-medium transition disabled:cursor-default",
               warmed
                 ? "bg-flame/10 text-flame"
                 : "text-muted hover:bg-flame/10 hover:text-flame"
             )}
           >
-            <Heart className={cn("h-4 w-4", warmed && "fill-current", pending && "animate-lo-breathe")} />
+            {justWarmed && (
+              <span className="lo-warmth-burst" aria-hidden="true">
+                <span className="lo-warmth-ring" />
+                <span className="lo-warmth-spark" style={{ ["--i" as string]: 0 }} />
+                <span className="lo-warmth-spark" style={{ ["--i" as string]: 1 }} />
+                <span className="lo-warmth-spark" style={{ ["--i" as string]: 2 }} />
+                <span className="lo-warmth-spark" style={{ ["--i" as string]: 3 }} />
+                <span className="lo-warmth-spark" style={{ ["--i" as string]: 4 }} />
+                <span className="lo-warmth-spark" style={{ ["--i" as string]: 5 }} />
+              </span>
+            )}
+            <Heart
+              className={cn(
+                "h-4 w-4",
+                warmed && "fill-current",
+                pending && "animate-lo-breathe",
+                justWarmed && "lo-warmth-pop"
+              )}
+            />
             {warmed ? "warmed" : "send warmth"}
             {/* Only the author sees the total. Everyone else only sees their
                 own warmed/not-warmed state. Matches the DB's own visibility
