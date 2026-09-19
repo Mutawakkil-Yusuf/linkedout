@@ -4,6 +4,7 @@
 // Copyright (C) 2026 Mutawakkil Yusuf
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +12,10 @@ import { Lockup } from "@/components/logo";
 import { createProfile } from "./actions";
 
 export default function OnboardPage() {
+  const searchParams = useSearchParams();
+  const rawNext = searchParams.get("next");
+  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   async function onSubmit(formData: FormData) {
@@ -24,6 +29,7 @@ export default function OnboardPage() {
       <h1 className="mb-3 font-display text-[2.25rem] font-bold leading-tight tracking-[-0.035em]">Pick a handle</h1>
       <p className="mb-10 max-w-[32rem] text-[1rem] leading-relaxed text-muted">This is how people find you here. Real name is optional. Don’t use your work identity.</p>
       <form action={onSubmit} className="space-y-5">
+        {next && <input type="hidden" name="next" value={next} />}
         <Field label="handle" hint="3–24 chars, a–z, 0–9, underscore"><Input name="handle" required placeholder="quiet_forest" autoFocus /></Field>
         <Field label="right now" hint="optional · 140 chars"><Input name="now" maxLength={140} placeholder="Learning to sit still" /></Field>
         <Field label="display name" hint="optional"><Input name="display_name" placeholder="M." /></Field>

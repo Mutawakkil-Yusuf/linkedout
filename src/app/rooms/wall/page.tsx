@@ -41,6 +41,15 @@ export default async function RoomWallPage() {
   const spotlight = pickWeeklySpotlight(rooms);
   const rest = spotlight ? rooms.filter((r) => r.id !== spotlight.id) : rooms;
 
+  // Real post text for the spotlight room only — public_room_recent_posts
+  // (0019), body-only/no-identity, same anon-safe shape as the rest of
+  // this page. Just the one room, not all of them: a stranger scanning
+  // this page needs one concrete reason to click, not a wall of quotes.
+  const { data: spotlightPosts } = spotlight
+    ? await supabase.rpc("public_room_recent_posts", { p_room: spotlight.id, p_limit: 2 })
+    : { data: null };
+  const spotlightPostList = (spotlightPosts as { body: string; created_at: string }[] | null) ?? [];
+
   return (
     <div className="mx-auto max-w-[46rem] px-5 py-14">
       <header className="mb-10 flex flex-wrap items-center justify-between gap-3">
@@ -58,7 +67,7 @@ export default async function RoomWallPage() {
       {spotlight && (
         <section className="mb-10">
           <p className="mb-3 font-mono text-[0.72rem] uppercase tracking-[0.15em] text-flame-deep">Room of the week</p>
-          <SpotlightCard room={spotlight} />
+          <SpotlightCard room={spotlight} posts={spotlightPostList} />
         </section>
       )}
 
@@ -90,7 +99,7 @@ function pickWeeklySpotlight(rooms: RoomListing[]): RoomListing | null {
   return rooms[week % rooms.length];
 }
 
-function SpotlightCard({ room }: { room: RoomListing }) {
+function SpotlightCard({ room, posts }: { room: RoomListing; posts: { body: string; created_at: string }[] }) {
   const accent = getAccent(room.accent);
   return (
     <Link
@@ -103,6 +112,20 @@ function SpotlightCard({ room }: { room: RoomListing }) {
         <h2 className="font-display text-[1.5rem] font-bold tracking-[-0.02em] text-ink">{room.slug}</h2>
       </div>
       {room.name && <p className="mb-4 text-[1rem] text-ink-2">{room.name}</p>}
+
+      {posts.length > 0 && (
+        <div className="mb-4 space-y-2">
+          {posts.map((p, i) => (
+            <p
+              key={i}
+              className="rounded-[10px] bg-card/70 px-3 py-2 text-[0.88rem] leading-relaxed text-ink-2"
+            >
+              {p.body.length > 140 ? `${p.body.slice(0, 140).trimEnd()}…` : p.body}
+            </p>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[0.75rem] text-muted">
         <span>{room.member_count} {room.member_count === 1 ? "member" : "members"}</span>
         <span>{room.posts_today > 0 ? `${room.posts_today} ${room.posts_today === 1 ? "post" : "posts"} today` : "quiet today"}</span>

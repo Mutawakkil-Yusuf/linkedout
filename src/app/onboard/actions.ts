@@ -36,5 +36,7 @@ export async function createProfile(formData: FormData) {
     if (error.code === "23505") return { error: "Handle is taken." };
     return { error: error.message };
   }
-  redirect("/rooms");
+  const rawNext = String(formData.get("next") || "");
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+  redirect(next ?? "/rooms");
 }

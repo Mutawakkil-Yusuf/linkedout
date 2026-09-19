@@ -6,10 +6,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Trash2, UserPlus } from "lucide-react";
+import { LogOut, Trash2, UserPlus, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ActionButton } from "@/components/ui/action-button";
 import { InviteDialog } from "@/components/invite-dialog";
+import { ShareLinkDialog } from "@/components/share-link-dialog";
 import { leaveRoom, deleteRoom } from "@/lib/actions/rooms";
 import { useToast } from "@/components/toast-provider";
 import { fmtMonthYear } from "@/lib/utils";
@@ -42,6 +43,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
   const router = useRouter();
   const toast = useToast();
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [confirmingLeave, setConfirmingLeave] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [typedSlug, setTypedSlug] = useState("");
@@ -107,6 +109,17 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
         <div className="flex flex-wrap items-center gap-2">
           {isMember && (
             <>
+              {room.visibility === "public" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShareOpen(true)}
+                  className="gap-1.5 rounded-full uppercase tracking-[0.06em]"
+                >
+                  <Link2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  Share
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -170,6 +183,7 @@ export function RoomHeader({ room, memberCount, role, joinedAt, isMod, openRepor
       </header>
 
       <InviteDialog open={inviteOpen} onClose={() => setInviteOpen(false)} roomId={room.id} />
+      <ShareLinkDialog open={shareOpen} onClose={() => setShareOpen(false)} roomId={room.id} slug={room.slug} />
 
       {confirmingLeave && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6">

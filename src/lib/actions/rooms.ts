@@ -380,3 +380,90 @@ export async function revokeInvite(input: z.infer<typeof revokeInviteSchema>): P
 
   return { ok: true };
 }
+
+// ─────────────────────────────────────────────────────────────
+// room share links — see 0018_room_share_links.sql for the trust
+// model. Distinct from room_invites above: these are public-room-only,
+// token-based, and don't require the sharer and joiner to already
+// know each other.
+// ─────────────────────────────────────────────────────────────
+
+function randomToken(len = 10): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(len));
+  return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
+}
+
+const createShareLinkSchema = z.object({ roomId: z.string().uuid(), slug: z.string().min(1) });
+
+export type ShareLinkResult =
+  | { ok: true; token: string }
+  | { ok: false; error: string };
+
+export async function createShareLink(
+  input: z.infer<typeof createShareLinkSchema>
+): Promise<ShareLinkResult> {
+  const parsed = createShareLinkSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Invalid room" };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in" };
+
+  // Retry on the (extremely unlikely) token collision — unique constraint
+  // in the migration is the real guarantee, this just makes it painless.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const token = randomToken();
+    const { error } = await supabase.from("room_share_links").insert({
+      room_id: parsed.data.roomId,
+      created_by: user.id,
+      token,
+    });
+    if (!error) {
+      revalidatePath(`/rooms/${parsed.data.slug}`);
+      return { ok: true, token };
+    }
+    if (error.code !== "23505") return { ok: false, error: error.message };
+  }
+  return { ok: false, error: "Couldn't create a link, try again." };
+}
+
+const revokeShareLinkSchema = z.object({ linkId: z.string().uuid(), slug: z.string().min(1) });
+
+export async function revokeShareLink(input: z.infer<typeof revokeShareLinkSchema>): Promise<Result> {
+  const parsed = revokeShareLinkSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Invalid" };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("room_share_links")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("id", parsed.data.linkId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath(`/rooms/${parsed.data.slug}`);
+  return { ok: true };
+}
+
+const redeemShareLinkSchema = z.object({ token: z.string().min(1) });
+
+export type RedeemResult =
+  | { ok: true; slug: string }
+  | { ok: false; error: string };
+
+export async function redeemShareLink(
+  input: z.infer<typeof redeemShareLinkSchema>
+): Promise<RedeemResult> {
+  const parsed = redeemShareLinkSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Invalid link" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .rpc("redeem_room_share_link", { p_token: parsed.data.token })
+    .single<{ room_id: string; room_slug: string }>();
+
+  if (error || !data) return { ok: false, error: error?.message ?? "Link not found" };
+
+  revalidatePath(`/rooms/${data.room_slug}`);
+  return { ok: true, slug: data.room_slug };
+}

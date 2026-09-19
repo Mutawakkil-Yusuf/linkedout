@@ -178,6 +178,8 @@ export default async function RoomPage({ params }: { params: Promise<{ slug: str
                     warmthCount={p.reactions?.[0]?.count ?? 0}
                     isMod={isMod}
                     isPinned={room.pinned_post_id === p.id}
+                    roomName={room.slug}
+                    roomAccent={room.accent}
                   />
                 </li>
               ))}

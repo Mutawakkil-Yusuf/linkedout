@@ -26,6 +26,7 @@ export async function middleware(request: NextRequest) {
   const isPublic =
     path === "/" ||
     path === "/rooms/wall" ||
+    path.startsWith("/join/") ||
     path.startsWith("/login") ||
     path.startsWith("/auth") ||
     path.startsWith("/motion") ||
@@ -36,7 +37,11 @@ export async function middleware(request: NextRequest) {
 
   if (user && !path.startsWith("/onboard") && !path.startsWith("/auth")) {
     const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
-    if (!profile) return NextResponse.redirect(new URL("/onboard", request.url));
+    if (!profile) {
+      const onboardUrl = new URL("/onboard", request.url);
+      onboardUrl.searchParams.set("next", path);
+      return NextResponse.redirect(onboardUrl);
+    }
   }
 
   return response;

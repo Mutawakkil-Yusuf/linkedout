@@ -4,7 +4,7 @@
 // Copyright (C) 2026 Mutawakkil Yusuf
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,13 @@ import { ActionButton } from "@/components/ui/action-button";
 // whichever context the person is already using.
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // ?next=/join/abc123 — where to send someone after they sign in or
+  // finish onboarding. Only ever an internal path (checked below), so
+  // this can't be turned into an open redirect.
+  const rawNext = searchParams.get("next");
+  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
@@ -44,7 +51,11 @@ export default function LoginPage() {
     const user = data.user;
     if (!user) { setErr("Something went wrong. Try again."); throw new Error("no user"); }
     const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
-    router.replace(profile ? "/rooms" : "/onboard");
+    if (!profile) {
+      router.replace(next ? `/onboard?next=${encodeURIComponent(next)}` : "/onboard");
+      return;
+    }
+    router.replace(next ?? "/rooms");
   }
 
   return (
