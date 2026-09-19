@@ -59,7 +59,6 @@ export async function GET(req: Request) {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
           padding: 56,
           background: "#fdf8f3",
           fontFamily: "sans-serif",
@@ -104,7 +103,28 @@ export async function GET(req: Request) {
           )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: 28,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <img src={avatarDataUri} width={56} height={56} style={{ borderRadius: 14 }} />
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: 18, fontWeight: 700, color: "#1c1613" }}>
+                {displayName ?? `@${handle}`}
+              </span>
+              <span style={{ fontSize: 14, fontFamily: "monospace", color: "#8a7a6d" }}>
+                @{handle}
+                {dateLabel ? ` · ${dateLabel}` : ""}
+              </span>
+            </div>
+          </div>
+
           <p
             style={{
               margin: 0,
@@ -118,19 +138,6 @@ export async function GET(req: Request) {
           >
             {body}
           </p>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <img src={avatarDataUri} width={56} height={56} style={{ borderRadius: 14 }} />
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: 18, fontWeight: 700, color: "#1c1613" }}>
-                {displayName ?? `@${handle}`}
-              </span>
-              <span style={{ fontSize: 14, fontFamily: "monospace", color: "#8a7a6d" }}>
-                @{handle}
-                {dateLabel ? ` · ${dateLabel}` : ""}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     ),
